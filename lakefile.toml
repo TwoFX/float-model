@@ -1,0 +1,7 @@
+name = "float-model"
+version = "0.1.0"
+defaultTargets = ["FloatModel"]
+
+[[lean_lib]]
+name = "FloatModel"
+
