@@ -13,10 +13,20 @@ namespace FloatModel
 
 /--
 Inductive with two constructors `negative` and `positive` for representing sign bits in
-floating-point models.
+floating-point models. This is not a general-purpose sign type like mathlib's `SignType`,
+which also includes a `zero` case.
 -/
 inductive Sign where
+  /-- Negative (`-`) sign. -/
   | negative : Sign
+  /-- Positive (`+`) sign. -/
   | positive : Sign
+
+instance : Mul Sign where
+  mul
+    | .negative, .negative => .positive
+    | .negative, .positive => .negative
+    | .positive, .negative => .negative
+    | .positive, .positive => .positive
 
 end FloatModel

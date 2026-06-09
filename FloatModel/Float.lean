@@ -5,5 +5,6 @@ Authors: Julia M. Himmel
 -/
 module
 
-public import FloatModel.Float
-public import FloatModel.Sign
+public import FloatModel.Float.Basic
+public import FloatModel.Float.FloatSpec
+public import FloatModel.Float.Round
