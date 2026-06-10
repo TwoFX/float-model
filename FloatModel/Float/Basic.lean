@@ -13,10 +13,10 @@ public import FloatModel.Sign
 
 namespace FloatModel
 
-inductive Float where
-  | infinity (sign : Sign) : Float
-  | notANumber : Float
-  | zero (sign : Sign) : Float
-  | finite (sign : Sign) (mantissa : Nat) (exponent : Int) (mantissa_pos : 0 < mantissa) : Float
+inductive UnpackedFloat where
+  | infinity (sign : Sign) : UnpackedFloat
+  | notANumber : UnpackedFloat
+  | zero (sign : Sign) : UnpackedFloat
+  | finite (sign : Sign) (mantissa : Nat) (exponent : Int) (mantissa_pos : 0 < mantissa) : UnpackedFloat
 
 end FloatModel

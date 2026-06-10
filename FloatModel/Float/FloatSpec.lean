@@ -39,11 +39,15 @@ def minExponent (spec : FloatSpec) : Int :=
 /--
 Suppose we have written a number where `totalExponent` is the position of the
 most significant digit with the unit digit corresponds to `1`. So, for example,
-`1.0b` has total exponent `1`, `0.1b` has total exponent `0`, `0.01` has total
+`1.0b` has total exponent `1`, `0.1b` has total exponent `0`, `0.01b` has total
 exponent `-1`, and so on. This function computes which exponent that number
 should have according to the given `FloatSpec`. So, for example, for the number
 `0.1b` in `binary64` format, it wants us to use the exponent `-53`, corresponding
 to the representation `2^52 * 2^(-53)`.
+
+(Recall that we are multiplying through all of the mantissas by `2^(mantissaBits-1)`
+in order to make our mantissas integral. TODO: think about what this means for
+subnormal numbers)
 -/
 def targetExponent (spec : FloatSpec) (totalExponent : Int) : Int :=
   max (totalExponent - spec.mantissaBits) spec.minExponent
