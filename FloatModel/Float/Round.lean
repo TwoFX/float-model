@@ -45,10 +45,10 @@ Rounds the given mantissa with the given accuracy according to the
 round-to-nearest strategy, with ties breaking in favor of even
 mantissas.
 -/
-def roundToNearestEven (mantissa : Int) : Accuracy → Int
+def roundToNearestEven (mantissa : Nat) : Accuracy → Nat
   | .exact => mantissa
   | .inexact .lt => mantissa
-  | .inexact .eq => mantissa + mantissa.emod 2
+  | .inexact .eq => mantissa + mantissa % 2
   | .inexact .gt => mantissa + 1
 
 end Accuracy
@@ -60,7 +60,7 @@ mantissa.
 -/
 structure ExtendedMantissa where
   /-- The mantissa. -/
-  mantissa : Int
+  mantissa : Nat
   /-- The next bit after the least significant bit of the mantissa. -/
   roundBit : Bool
   /-- The bitwise `or` of all bits that are even less significant than the round bit.  -/
@@ -78,14 +78,14 @@ def accuracy : ExtendedMantissa → Accuracy
 /--
 Extracts the mantissa, rounded according to the data in the residual bits.
 -/
-def roundedMantissa (em : ExtendedMantissa) : Int :=
+def roundedMantissa (em : ExtendedMantissa) : Nat :=
   em.accuracy.roundToNearestEven em.mantissa
 
 /--
 Transforms a mantissa and an accuracy into an extended mantissa with the
 residual bits initialized to represent the given accuracy.
 -/
-def ofMantissaAndAccuracy (mantissa : Int) (accuracy : Accuracy) : ExtendedMantissa :=
+def ofMantissaAndAccuracy (mantissa : Nat) (accuracy : Accuracy) : ExtendedMantissa :=
   match accuracy with
   | .exact => ⟨mantissa, false, false⟩
   | .inexact .lt => ⟨mantissa, false, true⟩
@@ -97,8 +97,8 @@ Shift the mantissa right by one, propagating information into the residual bits
 as required.
 -/
 def shiftRightOne (em : ExtendedMantissa) : ExtendedMantissa where
-  mantissa := em.mantissa.tdiv 2
-  roundBit := em.mantissa.tmod 2 != 0
+  mantissa := em.mantissa / 2
+  roundBit := em.mantissa % 2 != 0
   stickyBit := em.roundBit || em.stickyBit
 
 instance : HShiftRight ExtendedMantissa Nat ExtendedMantissa where
@@ -111,9 +111,9 @@ Computes the target exponent for the given mantissa and exponent and shifts the
 mantissa and exponent and initial accuracy to the target exponent, returning
 the new extended mantissa and exponent.
 -/
-def shiftToTargetExponent (spec : FloatSpec) (mantissa : Int) (exponent : Int)
+def shiftToTargetExponent (spec : FloatSpec) (mantissa : Nat) (exponent : Int)
     (accuracy : Accuracy) : ExtendedMantissa × Int :=
-  let totalExponent := mantissa.natAbs.log2 + 1 + exponent
+  let totalExponent := mantissa.log2 + 1 + exponent
   let targetExponent := spec.targetExponent totalExponent
   let shiftAmount := (targetExponent - exponent).toNat -- negative to 0
   let initialExtendedMantissa := ExtendedMantissa.ofMantissaAndAccuracy mantissa accuracy
@@ -126,7 +126,7 @@ Given a finite float represented by a sign, mantissa and exponent, together with
 Important: this function will only drop bits from the mantissa and increase the exponent,
 not the other way around.
 -/
-def roundWithAccuracy (spec : FloatSpec) (sign : Sign) (mantissa : Int) (exponent : Int) (accuracy : Accuracy) : Float :=
+def roundWithAccuracy (spec : FloatSpec) (sign : Sign) (mantissa : Nat) (exponent : Int) (accuracy : Accuracy) : Float :=
   -- First shift: this performs the bulk of the shifting
   let (em₁, e₁) := shiftToTargetExponent spec mantissa exponent accuracy
   -- Round mantissa
@@ -138,7 +138,7 @@ def roundWithAccuracy (spec : FloatSpec) (sign : Sign) (mantissa : Int) (exponen
   if finalMantissa = 0 then
     .zero sign
   else if h : 0 < finalMantissa then
-    .finite sign finalMantissa.toNat finalExponent (by simpa)
+    .finite sign finalMantissa finalExponent h
   else
     .notANumber -- cannot happen??
 

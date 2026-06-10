@@ -52,8 +52,6 @@ subnormal numbers)
 def targetExponent (spec : FloatSpec) (totalExponent : Int) : Int :=
   max (totalExponent - spec.mantissaBits) spec.minExponent
 
-#eval binary64.targetExponent 0
-
 end FloatSpec
 
 end FloatModel
