@@ -126,7 +126,7 @@ Given a finite float represented by a sign, mantissa and exponent, together with
 Important: this function will only drop bits from the mantissa and increase the exponent,
 not the other way around.
 -/
-def roundWithAccuracy (spec : FloatSpec) (sign : Sign) (mantissa : Nat) (exponent : Int) (accuracy : Accuracy) : Float :=
+def roundWithAccuracy (spec : FloatSpec) (sign : Sign) (mantissa : Nat) (exponent : Int) (accuracy : Accuracy) : UnpackedFloat :=
   -- First shift: this performs the bulk of the shifting
   let (em₁, e₁) := shiftToTargetExponent spec mantissa exponent accuracy
   -- Round mantissa
