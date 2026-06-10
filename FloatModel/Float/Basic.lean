@@ -18,5 +18,6 @@ inductive UnpackedFloat where
   | notANumber : UnpackedFloat
   | zero (sign : Sign) : UnpackedFloat
   | finite (sign : Sign) (mantissa : Nat) (exponent : Int) (mantissa_pos : 0 < mantissa) : UnpackedFloat
+deriving Repr, BEq
 
 end FloatModel

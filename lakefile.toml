@@ -1,7 +1,9 @@
 name = "float-model"
 version = "0.1.0"
-defaultTargets = ["FloatModel"]
+defaultTargets = ["FloatModel", "FloatModelTests"]
 
 [[lean_lib]]
 name = "FloatModel"
 
+[[lean_lib]]
+name = "FloatModelTests"

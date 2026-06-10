@@ -21,6 +21,9 @@ inductive Sign where
   | negative : Sign
   /-- Positive (`+`) sign. -/
   | positive : Sign
+deriving Repr, BEq
+
+namespace Sign
 
 instance : Mul Sign where
   mul
@@ -28,5 +31,17 @@ instance : Mul Sign where
     | .negative, .positive => .negative
     | .positive, .negative => .negative
     | .positive, .positive => .positive
+
+instance : Neg Sign where
+  neg
+    | .negative => .positive
+    | .positive => .negative
+
+def apply (s : Sign) (n : Int) : Int :=
+  match s with
+  | .negative => -n
+  | .positive => n
+
+end Sign
 
 end FloatModel

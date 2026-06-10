@@ -165,7 +165,6 @@ def round (spec : FloatSpec) (sign : Sign) (mantissa : Nat) (exponent : Int) : U
 Given a finite float represented as a signed mantissa and an exponent, round it to conform to the
 given `FloatSpec`.
 
-
 If necessary, this will both decrease and increase the exponent.
 -/
 def normalize (spec : FloatSpec) (mantissa : Int) (exponent : Int) (zeroSign : Sign) : UnpackedFloat :=
