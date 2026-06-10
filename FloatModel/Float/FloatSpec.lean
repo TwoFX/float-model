@@ -17,17 +17,39 @@ of bits in the mantissa, and the range of the exponent, which is represented by
 the exponent that denotes infinity.
 -/
 structure FloatSpec where
-  /-- The number of bits in the mantissa, including the implicit bit. -/
-  mantissaBits : Nat
-  /-- The exponent used to denote inifinities. -/
-  infinityExponent : Nat
+  /-- The number of bits in the mantissa, *excluding the implicit bit*. -/
+  mantissaBitsWithoutImplicit : Nat
+  hm : 0 < mantissaBitsWithoutImplicit
+  /-- The number of bits in the exponent. -/
+  exponentBits : Nat
+  he : 0 < exponentBits
 
 namespace FloatSpec
 
 /-- Specification corresponding to the IEEE `binary64` format. -/
-def binary64 : FloatSpec where
-  mantissaBits := 53
-  infinityExponent := 1024
+abbrev binary64 : FloatSpec where
+  mantissaBitsWithoutImplicit := 52
+  hm := by decide
+  exponentBits := 11
+  he := by decide
+
+abbrev numBits (spec : FloatSpec) : Nat :=
+  1 + spec.exponentBits + spec.mantissaBitsWithoutImplicit
+
+/-- The number of bits in the mantisse, *including the implicit bit*. -/
+def mantissaBits (spec : FloatSpec) : Nat :=
+  1 + spec.mantissaBitsWithoutImplicit
+
+/-- The exponent that represents the infinities. -/
+def infinityExponent (spec : FloatSpec) : Nat :=
+  2 ^ (spec.exponentBits - 1)
+
+/--
+The exponent bias. In packed formats, we store the sum of the true exponent and
+the bias.
+-/
+def exponentBias (spec : FloatSpec) : Nat :=
+  2 ^ (spec.exponentBits - 1) - 1
 
 /--
 The smallest exponent possible for a number using the given specification,
@@ -43,11 +65,10 @@ most significant digit with the unit digit corresponds to `1`. So, for example,
 exponent `-1`, and so on. This function computes which exponent that number
 should have according to the given `FloatSpec`. So, for example, for the number
 `0.1b` in `binary64` format, it wants us to use the exponent `-53`, corresponding
-to the representation `2^52 * 2^(-53)`.
-
-(Recall that we are multiplying through all of the mantissas by `2^(mantissaBits-1)`
-in order to make our mantissas integral. TODO: think about what this means for
-subnormal numbers)
+to the representation `2^52 * 2^(-53)`, which has a 53-bit mantissa. If the total
+exponent gets quite small, then the result exponent eventually gets capped at
+`spec.minExponent`, which first forces the result to be a subnormal number and
+then, if the total exponent is even smaller, to be zero.
 -/
 def targetExponent (spec : FloatSpec) (totalExponent : Int) : Int :=
   max (totalExponent - spec.mantissaBits) spec.minExponent

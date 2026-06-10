@@ -13,8 +13,10 @@ meta import FloatModel.Float.Round
 open FloatModel
 
 def spec : FloatModel.FloatSpec where
-  mantissaBits := 4
-  infinityExponent := 32
+  mantissaBitsWithoutImplicit := 3
+  hm := by decide
+  exponentBits := 5
+  he := by decide
 
 #guard normalize spec 0b1110111 (-2) .positive == .finite .positive 15 1 (by decide)
 #guard normalize spec 0b111001 (-1) .positive == .finite .positive 14 1 (by decide)

@@ -37,10 +37,26 @@ instance : Neg Sign where
     | .negative => .positive
     | .positive => .negative
 
+/--
+Apply the given sign to the given integer.
+-/
 def apply (s : Sign) (n : Int) : Int :=
   match s with
   | .negative => -n
   | .positive => n
+
+/--
+Converts the sign to a bitvector, with positive sign denoted by `0`.
+-/
+def toBitVec : Sign → BitVec 1
+  | .negative => 1#1
+  | .positive => 0#1
+
+/--
+Constructs a sign from a bitvector, with positive sign denoted by `0`.
+-/
+def ofBitVec (b  : BitVec 1) : Sign :=
+  if b = 0#1 then .positive else .negative
 
 end Sign
 

@@ -8,3 +8,4 @@ module
 public import FloatModel.Float.Basic
 public import FloatModel.Float.FloatSpec
 public import FloatModel.Float.Round
+public import FloatModel.Float.Pack
