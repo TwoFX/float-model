@@ -135,11 +135,43 @@ def roundWithAccuracy (spec : FloatSpec) (sign : Sign) (mantissa : Nat) (exponen
   -- once more (no rounding is necessary after this):
   let (finalExtendedMantissa, finalExponent) := shiftToTargetExponent spec roundedEm₁ e₁ .exact
   let finalMantissa := finalExtendedMantissa.mantissa
-  if finalMantissa = 0 then
+
+  if h : finalMantissa = 0 then
     .zero sign
-  else if h : 0 < finalMantissa then
-    .finite sign finalMantissa finalExponent h
   else
-    .notANumber -- cannot happen??
+    .finite sign finalMantissa finalExponent (Nat.pos_of_ne_zero h)
+
+/--
+If the target exponent is smaller than the given exponent, decreases the exponent of the mantissa to
+the target exponent; otherwise does nothing.
+-/
+def decreaseExponent (mantissa : Nat) (exponent : Int) (targetExponent : Int) : Nat × Int :=
+  let shiftAmount := (exponent - targetExponent).toNat -- negative to 0
+  (mantissa <<< shiftAmount, exponent - shiftAmount)
+
+/--
+Given a finite float represented by a sign, mantissa and exponent,
+round it to conform to the given `FloatSpec`.
+
+If necessary, this will both decrease and increase the exponent.
+-/
+def round (spec : FloatSpec) (sign : Sign) (mantissa : Nat) (exponent : Int) : UnpackedFloat :=
+  let totalExponent := mantissa.log2 + 1 + exponent
+  let targetExponent := spec.targetExponent totalExponent + exponent
+  let (mantissa, exponent) := decreaseExponent mantissa exponent targetExponent
+  roundWithAccuracy spec sign mantissa exponent .exact
+
+/--
+Given a finite float represented as a signed mantissa and an exponent, round it to conform to the
+given `FloatSpec`.
+
+
+If necessary, this will both decrease and increase the exponent.
+-/
+def normalize (spec : FloatSpec) (mantissa : Int) (exponent : Int) (zeroSign : Sign) : UnpackedFloat :=
+  match compare mantissa 0 with
+  | .lt => round spec .negative (-mantissa).toNat exponent
+  | .eq => .zero zeroSign
+  | .gt => round spec .positive mantissa.toNat exponent
 
 end FloatModel
