@@ -5,7 +5,8 @@ Authors: Julia M. Himmel
 -/
 module
 
-import FloatModel.Float.Round
+import FloatModel
+meta import FloatModel
 
 open FloatModel
 

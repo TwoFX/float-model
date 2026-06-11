@@ -5,8 +5,8 @@ Authors: Julia M. Himmel
 -/
 module
 
-import FloatModel.Float.Sub
-import FloatModel.Float.Pack
+import FloatModel
+meta import FloatModel
 
 open FloatModel
 
