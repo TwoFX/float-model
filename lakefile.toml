@@ -7,3 +7,7 @@ name = "FloatModel"
 
 [[lean_lib]]
 name = "FloatModelTests"
+
+[[lean_exe]]
+name = "testfloat-check"
+root = "FloatModelTests.TestFloatCheck"

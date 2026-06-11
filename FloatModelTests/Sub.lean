@@ -7,11 +7,6 @@ module
 
 import FloatModel.Float.Sub
 import FloatModel.Float.Pack
-meta import FloatModel.Sign
-meta import FloatModel.Float.Basic
-meta import FloatModel.Float.Round
-meta import FloatModel.Float.Sub
-meta import FloatModel.Float.Pack
 
 open FloatModel
 
@@ -21,13 +16,17 @@ def spec : FloatModel.FloatSpec where
   exponentBits := 5
   he := by decide
 
-#guard
+/-- info: true -/
+#guard_msgs in
+#eval
   (UnpackedFloat.finite .positive 0b1000 2 (by decide)).sub
   spec
   (UnpackedFloat.finite .positive 0b1101 (-2) (by decide)) ==
   (UnpackedFloat.finite .positive 0b1110 1 (by decide))
 
-#guard
+/-- info: true -/
+#guard_msgs in
+#eval
   (UnpackedFloat.finite .positive 0b1000 2 (by decide)).sub
   spec
   (UnpackedFloat.finite .positive 0b1001 (-2) (by decide)) ==
@@ -36,7 +35,18 @@ def spec : FloatModel.FloatSpec where
 def subSoft (x y : Float) : Float :=
   (UnpackedFloat.sub FloatSpec.binary64 (.ofFloat x) (.ofFloat y)).toFloat
 
-def floats : Array Float := #[1, 0, 121.12341212, 0.123]
+def floats : Array Float := #[
+  1,
+  0,
+  121.12341212,
+  0.123,
+  Float.ofBits (UInt64.ofNat 0x403001fffffffeff),
+  Float.ofBits (UInt64.ofNat 0x402ffffdfffffffe),
+  Float.ofBits (UInt64.ofNat 0x0000000000000001),
+  Float.ofBits (UInt64.ofNat 0x000fffffffffffff),
+  Float.ofBits (UInt64.ofNat 0xffefffcfffffffff),
+  Float.ofBits (UInt64.ofNat 0x7fe0000000000001)
+]
 
 def check : Bool := Id.run do
   for a in floats do
@@ -45,4 +55,6 @@ def check : Bool := Id.run do
         return false
   return true
 
-#guard check
+/-- info: true -/
+#guard_msgs in
+#eval check

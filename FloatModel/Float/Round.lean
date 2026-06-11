@@ -157,7 +157,7 @@ If necessary, this will both decrease and increase the exponent.
 -/
 def round (spec : FloatSpec) (sign : Sign) (mantissa : Nat) (exponent : Int) : UnpackedFloat :=
   let totalExponent := mantissa.log2 + 1 + exponent
-  let targetExponent := spec.targetExponent totalExponent + exponent
+  let targetExponent := spec.targetExponent totalExponent
   let (mantissa, exponent) := decreaseExponent mantissa exponent targetExponent
   roundWithAccuracy spec sign mantissa exponent .exact
 
