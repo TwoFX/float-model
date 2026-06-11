@@ -5,14 +5,17 @@ Authors: Julia M. Himmel
 -/
 module
 
+import FloatModel.Float.Add
 import FloatModel.Float.Sub
 import FloatModel.Float.Pack
 
 /-!
-Checks `UnpackedFloat.sub` against test vectors produced by Berkeley TestFloat:
+Checks the model's operations against test vectors produced by Berkeley TestFloat:
 
   vendor/berkeley-testfloat-3/build/Linux-x86_64-GCC/testfloat_gen -rnear_even f64_sub \
-    | lake exe testfloat-check
+    | lake exe testfloat-check f64_sub
+
+The first argument selects the operation to check (`f64_add` or `f64_sub`).
 
 Each input line has the form `<operand1> <operand2> <expected> <flags>` with all fields
 in hexadecimal and floats given as their `binary64` bit patterns. The exception flags are
@@ -40,12 +43,22 @@ def toHex (x : UInt64) : String :=
 def isNaNBits (x : UInt64) : Bool :=
   (x >>> 52) &&& 0x7FF == 0x7FF && (x &&& 0x000FFFFFFFFFFFFF) != 0
 
-def modelSub (a b : UInt64) : UInt64 :=
+def modelBinop (op : FloatModel.FloatSpec → UnpackedFloat → UnpackedFloat → UnpackedFloat)
+    (a b : UInt64) : UInt64 :=
   let ua := unpack FloatSpec.binary64 a.toBitVec
   let ub := unpack FloatSpec.binary64 b.toBitVec
-  UInt64.ofBitVec (pack FloatSpec.binary64 (UnpackedFloat.sub FloatSpec.binary64 ua ub))
+  UInt64.ofBitVec (pack FloatSpec.binary64 (op FloatSpec.binary64 ua ub))
+
+def operations : List (String × Char × (UInt64 → UInt64 → UInt64)) :=
+  [("f64_add", '+', modelBinop UnpackedFloat.add),
+   ("f64_sub", '-', modelBinop UnpackedFloat.sub)]
 
 public def main (args : List String) : IO UInt32 := do
+  let some (_, opChar, modelOp) := args.head?.bind fun name =>
+      operations.find? (·.1 == name)
+    | IO.eprintln s!"usage: testfloat-check <operation> [--all]\n\
+        known operations: {", ".intercalate (operations.map (·.1))}"
+      return 2
   let stdin ← IO.getStdin
   let maxShown := if args.contains "--all" then 1000000000 else 20
   let mut total := 0
@@ -65,13 +78,13 @@ public def main (args : List String) : IO UInt32 := do
           | IO.eprintln s!"malformed line: {line.trimAscii.toString}"; return 2
         let some expected := hexToUInt64? expectedHex
           | IO.eprintln s!"malformed line: {line.trimAscii.toString}"; return 2
-        let actual := modelSub a b
+        let actual := modelOp a b
         total := total + 1
         let ok := actual == expected || (isNaNBits actual && isNaNBits expected)
         unless ok do
           failures := failures + 1
           if failures ≤ maxShown then
-            IO.eprintln s!"FAIL: {toHex a} - {toHex b} = {toHex expected}, model returned {toHex actual}"
+            IO.eprintln s!"FAIL: {toHex a} {opChar} {toHex b} = {toHex expected}, model returned {toHex actual}"
       | [] => pure ()
       | _ =>
         IO.eprintln s!"malformed line: {line.trimAscii.toString}"
