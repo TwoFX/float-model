@@ -5,9 +5,7 @@ Authors: Julia M. Himmel
 -/
 module
 
-import FloatModel.Float.Add
-import FloatModel.Float.Sub
-import FloatModel.Float.Pack
+import FloatModel.Float
 
 /-!
 Checks the model's operations against test vectors produced by Berkeley TestFloat:

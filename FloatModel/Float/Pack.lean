@@ -7,7 +7,6 @@ module
 
 public import FloatModel.Float.Basic
 public import FloatModel.Float.FloatSpec
-public import FloatModel.Float.Sub
 
 -- This file is part of the logical model for floats which authors of float libraries
 -- need to rely on.
