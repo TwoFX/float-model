@@ -9,3 +9,4 @@ public import FloatModel.Float.Operations.Add
 public import FloatModel.Float.Operations.Mul
 public import FloatModel.Float.Operations.Sub
 public import FloatModel.Float.Operations.Div
+public import FloatModel.Float.Operations.Sqrt

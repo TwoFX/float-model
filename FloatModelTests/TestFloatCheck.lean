@@ -13,10 +13,11 @@ Checks the model's operations against test vectors produced by Berkeley TestFloa
   vendor/berkeley-testfloat-3/build/Linux-x86_64-GCC/testfloat_gen -rnear_even f64_sub \
     | lake exe testfloat-check f64_sub
 
-The first argument selects the operation to check (`f64_add`, `f64_sub`, or `f64_mul`).
+The first argument selects the operation to check (e.g. `f64_add` or `f64_sqrt`).
 
-Each input line has the form `<operand1> <operand2> <expected> <flags>` with all fields
-in hexadecimal and floats given as their `binary64` bit patterns. The exception flags are
+Each input line has the form `<operand1> [<operand2>] <expected> <flags>` (the second
+operand is absent for unary operations) with all fields in hexadecimal and floats given
+as their `binary64` bit patterns. The exception flags are
 ignored since the model does not compute them. NaN results are compared as a class, not
 bit-for-bit, since the model produces a canonical NaN rather than propagating payloads.
 -/
@@ -47,15 +48,27 @@ def modelBinop (op : FloatModel.FloatSpec → UnpackedFloat → UnpackedFloat �
   let ub := unpack FloatSpec.binary64 b.toBitVec
   UInt64.ofBitVec (pack FloatSpec.binary64 (op FloatSpec.binary64 ua ub))
 
-def operations : List (String × Char × (UInt64 → UInt64 → UInt64)) :=
-  [("f64_add", '+', modelBinop UnpackedFloat.add),
-   ("f64_sub", '-', modelBinop UnpackedFloat.sub),
-   ("f64_mul", '*', modelBinop UnpackedFloat.mul),
-   ("f64_div", '/', modelBinop UnpackedFloat.div)
+def modelUnop (op : FloatModel.FloatSpec → UnpackedFloat → UnpackedFloat)
+    (a : UInt64) : UInt64 :=
+  let ua := unpack FloatSpec.binary64 a.toBitVec
+  UInt64.ofBitVec (pack FloatSpec.binary64 (op FloatSpec.binary64 ua))
+
+inductive Operation where
+  /-- A binary operation, checked against lines of the form `<a> <b> <expected> <flags>`. -/
+  | binary (symbol : Char) (op : UInt64 → UInt64 → UInt64)
+  /-- A unary operation, checked against lines of the form `<a> <expected> <flags>`. -/
+  | unary (name : String) (op : UInt64 → UInt64)
+
+def operations : List (String × Operation) :=
+  [("f64_add", .binary '+' (modelBinop UnpackedFloat.add)),
+   ("f64_sub", .binary '-' (modelBinop UnpackedFloat.sub)),
+   ("f64_mul", .binary '*' (modelBinop UnpackedFloat.mul)),
+   ("f64_div", .binary '/' (modelBinop UnpackedFloat.div)),
+   ("f64_sqrt", .unary "sqrt" (modelUnop UnpackedFloat.sqrt))
    ]
 
 public def main (args : List String) : IO UInt32 := do
-  let some (_, opChar, modelOp) := args.head?.bind fun name =>
+  let some (_, operation) := args.head?.bind fun name =>
       operations.find? (·.1 == name)
     | IO.eprintln s!"usage: testfloat-check <operation> [--all]\n\
         known operations: {", ".intercalate (operations.map (·.1))}"
@@ -71,25 +84,22 @@ public def main (args : List String) : IO UInt32 := do
       done := true
     else
       let tokens := line.trimAscii.toString.split " " |>.filter (!·.isEmpty) |>.toStringList
-      match tokens with
-      | aHex :: bHex :: expectedHex :: _ =>
-        let some a := hexToUInt64? aHex
+      unless tokens.isEmpty do
+        let parsed : Option (String × UInt64 × UInt64) :=
+          match operation, tokens.mapM hexToUInt64? with
+          | .binary symbol op, some (a :: b :: expected :: _) =>
+            some (s!"{toHex a} {symbol} {toHex b}", op a b, expected)
+          | .unary name op, some (a :: expected :: _) =>
+            some (s!"{name}({toHex a})", op a, expected)
+          | _, _ => none
+        let some (description, actual, expected) := parsed
           | IO.eprintln s!"malformed line: {line.trimAscii.toString}"; return 2
-        let some b := hexToUInt64? bHex
-          | IO.eprintln s!"malformed line: {line.trimAscii.toString}"; return 2
-        let some expected := hexToUInt64? expectedHex
-          | IO.eprintln s!"malformed line: {line.trimAscii.toString}"; return 2
-        let actual := modelOp a b
         total := total + 1
         let ok := actual == expected || (isNaNBits actual && isNaNBits expected)
         unless ok do
           failures := failures + 1
           if failures ≤ maxShown then
-            IO.eprintln s!"FAIL: {toHex a} {opChar} {toHex b} = {toHex expected}, model returned {toHex actual}"
-      | [] => pure ()
-      | _ =>
-        IO.eprintln s!"malformed line: {line.trimAscii.toString}"
-        return 2
+            IO.eprintln s!"FAIL: {description} = {toHex expected}, model returned {toHex actual}"
   if failures > maxShown then
     IO.eprintln s!"... ({failures - maxShown} further failures suppressed)"
   IO.println s!"{total} tests, {failures} failures"
