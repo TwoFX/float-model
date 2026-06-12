@@ -124,7 +124,9 @@ Given a finite float represented by a sign, mantissa and exponent, together with
 `Accuracy` datum, round it to conform to the given `FloatSpec`.
 
 Important: this function will only drop bits from the mantissa and increase the exponent,
-not the other way around.
+not the other way around. The result will only conform to the given specification if
+the exponent was not too large to begin with. If this may be the case, you should call
+`round` instead.
 -/
 def roundWithAccuracy (spec : FloatSpec) (sign : Sign) (mantissa : Nat) (exponent : Int) (accuracy : Accuracy) : UnpackedFloat :=
   -- First shift: this performs the bulk of the shifting

@@ -50,7 +50,9 @@ def modelBinop (op : FloatModel.FloatSpec → UnpackedFloat → UnpackedFloat �
 def operations : List (String × Char × (UInt64 → UInt64 → UInt64)) :=
   [("f64_add", '+', modelBinop UnpackedFloat.add),
    ("f64_sub", '-', modelBinop UnpackedFloat.sub),
-   ("f64_mul", '*', modelBinop UnpackedFloat.mul)]
+   ("f64_mul", '*', modelBinop UnpackedFloat.mul),
+   ("f64_div", '/', modelBinop UnpackedFloat.div)
+   ]
 
 public def main (args : List String) : IO UInt32 := do
   let some (_, opChar, modelOp) := args.head?.bind fun name =>

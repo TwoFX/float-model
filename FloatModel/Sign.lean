@@ -32,6 +32,13 @@ instance : Mul Sign where
     | .positive, .negative => .negative
     | .positive, .positive => .positive
 
+instance : Div Sign where
+  div
+    | .negative, .negative => .positive
+    | .negative, .positive => .negative
+    | .positive, .negative => .negative
+    | .positive, .positive => .positive
+
 instance : Neg Sign where
   neg
     | .negative => .positive
