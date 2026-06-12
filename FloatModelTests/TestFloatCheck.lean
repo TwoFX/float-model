@@ -13,7 +13,7 @@ Checks the model's operations against test vectors produced by Berkeley TestFloa
   vendor/berkeley-testfloat-3/build/Linux-x86_64-GCC/testfloat_gen -rnear_even f64_sub \
     | lake exe testfloat-check f64_sub
 
-The first argument selects the operation to check (`f64_add` or `f64_sub`).
+The first argument selects the operation to check (`f64_add`, `f64_sub`, or `f64_mul`).
 
 Each input line has the form `<operand1> <operand2> <expected> <flags>` with all fields
 in hexadecimal and floats given as their `binary64` bit patterns. The exception flags are
@@ -49,7 +49,8 @@ def modelBinop (op : FloatModel.FloatSpec → UnpackedFloat → UnpackedFloat �
 
 def operations : List (String × Char × (UInt64 → UInt64 → UInt64)) :=
   [("f64_add", '+', modelBinop UnpackedFloat.add),
-   ("f64_sub", '-', modelBinop UnpackedFloat.sub)]
+   ("f64_sub", '-', modelBinop UnpackedFloat.sub),
+   ("f64_mul", '*', modelBinop UnpackedFloat.mul)]
 
 public def main (args : List String) : IO UInt32 := do
   let some (_, opChar, modelOp) := args.head?.bind fun name =>
