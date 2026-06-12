@@ -11,6 +11,9 @@ module
 
 namespace FloatModel
 
+def totalExponent (mantissa : Nat) (exponent : Int) :=
+  mantissa.log2 + 1 + exponent
+
 /--
 A floating point format is specified by two pieces of information: the number
 of bits in the mantissa, and the range of the exponent, which is represented by
@@ -19,20 +22,24 @@ the exponent that denotes infinity.
 structure FloatSpec where
   /-- The number of bits in the mantissa, *excluding the implicit bit*. -/
   mantissaBitsWithoutImplicit : Nat
-  hm : 0 < mantissaBitsWithoutImplicit
+  hm : 0 < mantissaBitsWithoutImplicit := by decide
   /-- The number of bits in the exponent. -/
   exponentBits : Nat
-  he : 0 < exponentBits
+  he : 0 < exponentBits := by decide
 
 namespace FloatSpec
+
+/-- Specification corresponding to the IEEE `binary32` format. -/
+abbrev binary32 : FloatSpec where
+  mantissaBitsWithoutImplicit := 23
+  exponentBits := 8
 
 /-- Specification corresponding to the IEEE `binary64` format. -/
 abbrev binary64 : FloatSpec where
   mantissaBitsWithoutImplicit := 52
-  hm := by decide
   exponentBits := 11
-  he := by decide
 
+/-- The total number of bits in the packed representation. -/
 abbrev numBits (spec : FloatSpec) : Nat :=
   1 + spec.exponentBits + spec.mantissaBitsWithoutImplicit
 

@@ -113,8 +113,7 @@ the new extended mantissa and exponent.
 -/
 def shiftToTargetExponent (spec : FloatSpec) (mantissa : Nat) (exponent : Int)
     (accuracy : Accuracy) : ExtendedMantissa × Int :=
-  let totalExponent := mantissa.log2 + 1 + exponent
-  let targetExponent := spec.targetExponent totalExponent
+  let targetExponent := spec.targetExponent (totalExponent mantissa exponent)
   let shiftAmount := (targetExponent - exponent).toNat -- negative to 0
   let initialExtendedMantissa := ExtendedMantissa.ofMantissaAndAccuracy mantissa accuracy
   (initialExtendedMantissa >>> shiftAmount, exponent + shiftAmount)
@@ -158,8 +157,7 @@ round it to conform to the given `FloatSpec`.
 If necessary, this will both decrease and increase the exponent.
 -/
 def round (spec : FloatSpec) (sign : Sign) (mantissa : Nat) (exponent : Int) : UnpackedFloat :=
-  let totalExponent := mantissa.log2 + 1 + exponent
-  let targetExponent := spec.targetExponent totalExponent
+  let targetExponent := spec.targetExponent (totalExponent mantissa exponent)
   let (mantissa, exponent) := decreaseExponent mantissa exponent targetExponent
   roundWithAccuracy spec sign mantissa exponent .exact
 

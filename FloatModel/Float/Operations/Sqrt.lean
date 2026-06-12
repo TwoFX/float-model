@@ -24,7 +24,7 @@ the infinitely precise quotient.
 def sqrtCore (spec : FloatSpec) (m : Nat) (e : Int) : Nat × Int × Accuracy :=
   -- Here we shift so that the input is represented as `m * 2 ^ (2 * targetExponent)`, where `m` has
   -- so many bits that `sqrt m` still has enough bits for the specified format.
-  let targetExponent := min (e.ediv 2) (spec.targetExponent ((m.log2 + 1 + e + 1).ediv 2))
+  let targetExponent := min (e.ediv 2) (spec.targetExponent ((totalExponent m e + 1).ediv 2))
   let shiftAmount := (e - 2 * targetExponent).toNat
   let m := m <<< shiftAmount
 

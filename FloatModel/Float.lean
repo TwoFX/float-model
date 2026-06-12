@@ -10,3 +10,6 @@ public import FloatModel.Float.FloatSpec
 public import FloatModel.Float.Round
 public import FloatModel.Float.Pack
 public import FloatModel.Float.Operations
+public import FloatModel.Float.Model
+public import FloatModel.Float.Valid
+public import FloatModel.Float.Lemmas
