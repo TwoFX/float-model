@@ -21,15 +21,15 @@ def packComponents (spec : FloatSpec) (sign : Sign)
   sign.toBitVec ++ exponent ++ mantissa
 
 /-- Creates the packed signed infinity representation for the given specification. -/
-def mkInfinity (spec : FloatSpec) (sign : Sign) : BitVec spec.numBits :=
+def packedInfinity (spec : FloatSpec) (sign : Sign) : BitVec spec.numBits :=
   packComponents spec sign (-1#_) 0
 
 /-- Creates the canonical packed `NaN` for the given specification. -/
-def mkNaN (spec : FloatSpec) :=
+def packedNaN (spec : FloatSpec) : BitVec spec.numBits :=
   packComponents spec .positive (-1#_) (1#_ <<< (spec.mantissaBitsWithoutImplicit - 1))
 
 /-- Creates the packed signed zero representation for the given specification. -/
-def mkZero (spec : FloatSpec) (sign : Sign) :=
+def packedZero (spec : FloatSpec) (sign : Sign) : BitVec spec.numBits :=
   packComponents spec sign 0 0
 
 /--
@@ -39,14 +39,14 @@ This function assumes that the float is already correctly rounded for the given 
 This means that the exponent must be equal to the exponent computed by `spec.targetExponent`.
 -/
 def pack (spec : FloatSpec) : UnpackedFloat → BitVec spec.numBits
-  | .notANumber => mkNaN spec
-  | .infinity s => mkInfinity spec s
-  | .zero s => mkZero spec s
+  | .notANumber => packedNaN spec
+  | .infinity s => packedInfinity spec s
+  | .zero s => packedZero spec s
   | .finite s m e _ =>
     let actualMantissaBits := m.log2
     let biasedExponent := (e + spec.exponentBias + spec.mantissaBitsWithoutImplicit).toNat
     if 2 ^ spec.exponentBits ≤ biasedExponent + 1 then
-      mkInfinity spec s
+      packedInfinity spec s
     else if actualMantissaBits + 1 = spec.mantissaBits then
       -- normal
       -- Observe that the transformation of the mantissa clears the implicit bit
@@ -71,11 +71,33 @@ theorem Nat.eq_iff_testBit_eq {n m : Nat} : n = m ↔ ∀ i, Nat.testBit n i = N
 theorem Nat.or_pos {n m : Nat} : 0 < n ||| m ↔ 0 < n ∨ 0 < m := by
   simp [Nat.pos_iff_ne_zero]
   simp [Nat.eq_iff_testBit_eq]
-  grind
+  simp [Decidable.imp_iff_or_not, exists_or, or_comm]
 
 @[simp]
 theorem Nat.shiftLeft_pos {n m : Nat} : 0 < n <<< m ↔ 0 < n := by
   simp [Nat.pos_iff_ne_zero]
+
+/--
+Unpacks the mantissa portion of the packed float. If this is a normal number, this
+will be missing the implicit bit.
+-/
+def unpackMantissa {spec : FloatSpec} (b : BitVec spec.numBits) :
+    BitVec spec.mantissaBitsWithoutImplicit :=
+  b.extractLsb (spec.mantissaBitsWithoutImplicit - 1) 0 |>.cast (by have := spec.hm; omega)
+
+/--
+Unpacks the exponent portion of the packed float.
+-/
+def unpackExponent {spec : FloatSpec} (b : BitVec spec.numBits) :
+    BitVec spec.exponentBits :=
+  b.extractLsb (spec.mantissaBitsWithoutImplicit + spec.exponentBits - 1) spec.mantissaBitsWithoutImplicit |>.cast (by have := spec.he; omega)
+
+/--
+Unpacks the sign bit of the packed float.
+-/
+def unpackSign {spec : FloatSpec} (b : BitVec spec.numBits) :
+    BitVec 1 :=
+  b.extractLsb (spec.mantissaBitsWithoutImplicit + spec.exponentBits) (spec.mantissaBitsWithoutImplicit + spec.exponentBits) |>.cast (by omega)
 
 /--
 Unpacks the given float according to the given specification.
@@ -83,11 +105,11 @@ Unpacks the given float according to the given specification.
 The resulting float may be assumed to be correctly rounded for the given specification.
 -/
 def unpack (spec : FloatSpec) (b : BitVec spec.numBits) : UnpackedFloat :=
-  let mantissaVec : BitVec spec.mantissaBitsWithoutImplicit := b.extractLsb (spec.mantissaBitsWithoutImplicit - 1) 0 |>.cast (by grind [spec.hm])
-  let exponentVec : BitVec spec.exponentBits := b.extractLsb (spec.mantissaBitsWithoutImplicit + spec.exponentBits - 1) spec.mantissaBitsWithoutImplicit |>.cast (by grind [spec.he])
+  let mantissaVec := unpackMantissa b
+  let exponentVec : BitVec spec.exponentBits :=  unpackExponent b
   let unbiasedExponent : Int := (exponentVec.toNat : Int) - spec.exponentBias
   let exponent := unbiasedExponent - spec.mantissaBitsWithoutImplicit
-  let signVec : BitVec 1 := b.extractLsb (spec.mantissaBitsWithoutImplicit + spec.exponentBits) (spec.mantissaBitsWithoutImplicit + spec.exponentBits)  |>.cast (by grind)
+  let signVec : BitVec 1 := unpackSign b
   let sign := Sign.ofBitVec signVec
   if exponentVec = -1#_ then
     if mantissaVec = 0#_ then

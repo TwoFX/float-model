@@ -5,7 +5,7 @@ Authors: Julia M. Himmel
 -/
 module
 
-public import FloatModel.Float.Valid
+public import FloatModel.Float.Pack
 
 -- This file is part of the logical model for floats which authors of float libraries
 -- need to rely on.
@@ -13,21 +13,22 @@ public import FloatModel.Float.Valid
 
 namespace FloatModel
 
-/-- The type of unpacked floats that are in the specified format. -/
-structure ModelFloat (spec : FloatSpec) where
-  /-- The underlying unpacked float. -/
-  unpackedFloat : UnpackedFloat
-  /-- The unpacked float is valid according to the specification. -/
-  valid : spec.Valid unpackedFloat
+structure FloatSpec.Valid (spec : FloatSpec) (b : BitVec spec.numBits) : Prop where
+  /-- If the bit vector encodes a `NaN`, then it is the canonical `NaN`. -/
+  eq_packedNaN : unpackExponent b = (-1#_) → unpackMantissa b ≠ 0#_ → b = packedNaN spec
 
 /-- The logical model for the `Float` type. -/
 structure Float.Model where
-  /-- The logical model of the float. -/
-  modelFloat : ModelFloat FloatSpec.binary64
+  /-- The underlying bit pattern of the `Float`. -/
+  toBits : UInt64
+  /-- The underlying bit pattern is valid according to the format. -/
+  valid : FloatSpec.binary64.Valid toBits.toBitVec
 
 /-- The logical model for the `Float32` type. -/
 structure Float32.Model where
-  /-- The logical model of the float. -/
-  modelFloat : ModelFloat FloatSpec.binary32
+  /-- The underlying bit pattern of the `Float32`. -/
+  toBits : UInt32
+  /-- The underlying bit pattern is valid according to the format. -/
+  valid : FloatSpec.binary32.Valid toBits.toBitVec
 
 end FloatModel
