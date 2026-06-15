@@ -37,7 +37,10 @@ def operations : List (String × Operation) :=
    ("f64_sub", .binary '-' (modelBinop UnpackedFloat.sub)),
    ("f64_mul", .binary '*' (modelBinop UnpackedFloat.mul)),
    ("f64_div", .binary '/' (modelBinop UnpackedFloat.div)),
-   ("f64_sqrt", .unary "sqrt" (modelUnop UnpackedFloat.sqrt))
+   ("f64_sqrt", .unary "sqrt" (modelUnop UnpackedFloat.sqrt)),
+   ("f64_eq", .binary '=' (modelCompare UnpackedFloat.beq)),
+   ("f64_le", .binary '≤' (modelCompare UnpackedFloat.le)),
+   ("f64_lt", .binary '<' (modelCompare UnpackedFloat.lt))
    ]
 
 public def main (args : List String) : IO UInt32 := do

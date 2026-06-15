@@ -79,6 +79,12 @@ protected def beq (a b : UnpackedFloat) : Bool :=
 instance : BEq UnpackedFloat where
   beq a b := a.beq b
 
+instance : Min UnpackedFloat :=
+  Min.leftLeaningOfLE _
+
+instance : Max UnpackedFloat :=
+  Max.leftLeaningOfLE _
+
 end UnpackedFloat
 
 end FloatModel

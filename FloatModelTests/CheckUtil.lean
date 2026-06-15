@@ -43,6 +43,16 @@ public def modelUnop (op : FloatModel.FloatSpec → UnpackedFloat → UnpackedFl
   let ua := unpack FloatSpec.binary64 a.toBitVec
   UInt64.ofBitVec (pack FloatSpec.binary64 (op FloatSpec.binary64 ua))
 
+/--
+Adapts a comparison on `UnpackedFloat`s to operate on `binary64` bit patterns,
+returning `1` for a true result and `0` for a false one to match the boolean
+result column TestFloat emits for `f64_eq`, `f64_le`, and `f64_lt`.
+-/
+public def modelCompare (op : UnpackedFloat → UnpackedFloat → Bool) (a b : UInt64) : UInt64 :=
+  let ua := unpack FloatSpec.binary64 a.toBitVec
+  let ub := unpack FloatSpec.binary64 b.toBitVec
+  if op ua ub then 1 else 0
+
 public inductive Operation where
   /-- A binary operation on `binary64` bit patterns. -/
   | binary (symbol : Char) (op : UInt64 → UInt64 → UInt64)
