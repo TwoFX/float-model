@@ -47,10 +47,8 @@ theorem valid_pack {spec : FloatSpec} {f : UnpackedFloat} : spec.Valid (pack spe
   | case5 s m e hm actualMantissaBits biasedExponent h₁ h₂ =>
     suffices biasedExponent % 2 ^ spec.exponentBits ≠ 2 ^ spec.exponentBits - 1 by
       simp [BitVec.neg_one_eq_allOnes, ← BitVec.toNat_inj, this]
-    clear h₂ actualMantissaBits hm m s
     suffices biasedExponent < 2 ^ spec.exponentBits - 1 by
-      intro h
-      rw [Nat.mod_eq_of_lt (by omega)] at h
+      rw [Nat.mod_eq_of_lt (by omega)]
       omega
     omega
   | case6 s m e hm actualMantissaBits biasedExponent h₁ h₂ =>

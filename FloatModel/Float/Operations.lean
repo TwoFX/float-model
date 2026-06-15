@@ -10,3 +10,6 @@ public import FloatModel.Float.Operations.Mul
 public import FloatModel.Float.Operations.Sub
 public import FloatModel.Float.Operations.Div
 public import FloatModel.Float.Operations.Sqrt
+public import FloatModel.Float.Operations.Compare
+public import FloatModel.Float.Operations.Sign
+public import FloatModel.Float.Operations.Status

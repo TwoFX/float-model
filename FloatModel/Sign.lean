@@ -44,6 +44,13 @@ instance : Neg Sign where
     | .negative => .positive
     | .positive => .negative
 
+instance : Ord Sign where
+  compare
+    | .negative, .negative => .eq
+    | .negative, .positive => .lt
+    | .positive, .negative => .gt
+    | .positive, .positive => .eq
+
 /--
 Apply the given sign to the given integer.
 -/
