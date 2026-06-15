@@ -13,6 +13,10 @@ public import FloatModel.Float.Pack
 
 namespace FloatModel
 
+/--
+Predicate asserting that the bit representation of a float is valid according to the given
+format. By 'valid' we mean that `NaN` is encoded using the canonical `NaN`.
+-/
 structure FloatSpec.Valid (spec : FloatSpec) (b : BitVec spec.numBits) : Prop where
   /-- If the bit vector encodes a `NaN`, then it is the canonical `NaN`. -/
   eq_packedNaN : unpackExponent b = (-1#_) → unpackMantissa b ≠ 0#_ → b = packedNaN spec

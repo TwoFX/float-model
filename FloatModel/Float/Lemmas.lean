@@ -7,6 +7,11 @@ module
 
 public import FloatModel.Float.Model
 
+
+-- This file is part of the logical model for floats which authors of float libraries
+-- need to rely on.
+@[expose] public section
+
 namespace FloatModel
 
 @[simp]
@@ -31,6 +36,7 @@ theorem BitVec.zero_eq_neg_one_iff {w : Nat} : 0#w = (-1#w) ↔ w = 0 := by
     have : 2 ≤ 2 ^ (w + 1) := Nat.le_pow (by simp)
     omega
 
+@[simp]
 theorem valid_pack {spec : FloatSpec} {f : UnpackedFloat} : spec.Valid (pack spec f) := by
   refine ⟨?_⟩
   fun_cases pack with

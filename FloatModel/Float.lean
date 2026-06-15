@@ -12,3 +12,4 @@ public import FloatModel.Float.Pack
 public import FloatModel.Float.Operations
 public import FloatModel.Float.Model
 public import FloatModel.Float.Lemmas
+public import FloatModel.Float.FloatOps
