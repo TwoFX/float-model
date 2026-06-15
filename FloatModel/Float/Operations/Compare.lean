@@ -17,7 +17,7 @@ namespace UnpackedFloat
 
 /--
 Computes the ordering between the two floats as specificed by IEEE. Returns an
-`Option Ordering` to account for the fact that `NaN` is incomparable with itself.
+`Option Ordering` to account for the fact that `NaN` is incomparable with everything.
 Also, positive and negative zero are equal.
 -/
 protected def compare : UnpackedFloat → UnpackedFloat → Option Ordering
