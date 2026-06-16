@@ -6,5 +6,5 @@ Authors: Julia M. Himmel
 module
 
 prelude
-public import FloatModel.Model.Float
-public import FloatModel.Model.Float32
+public import FloatModel.Model
+public import FloatModel.Contrib
