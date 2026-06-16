@@ -7,7 +7,6 @@ module
 
 prelude
 public import FloatModel.Model.Unpacked.Basic
-public import Init.Data.Order.Factories
 
 -- This file is part of the logical model for floats which authors of float libraries
 -- need to rely on.
@@ -48,12 +47,6 @@ This is not a total ordering, and `≤` is not reflexive.
 protected def le (a b : UnpackedFloat) : Bool :=
   (a.compare b).any (·.isLE)
 
-instance : LE UnpackedFloat where
-  le a b := a.le b
-
-instance : DecidableLE UnpackedFloat :=
-  inferInstanceAs (∀ (a b : UnpackedFloat), Decidable (a.le b))
-
 /--
 Determines whether `a` is less than `b` according to IEEE rules.
 
@@ -62,12 +55,6 @@ This is not a total ordering.
 protected def lt (a b : UnpackedFloat) : Bool :=
   a.compare b == some .lt
 
-instance : LT UnpackedFloat where
-  lt a b := a.lt b
-
-instance : DecidableLT UnpackedFloat :=
-  inferInstanceAs (∀ (a b : UnpackedFloat), Decidable (a.lt b))
-
 /--
 Determines whether `a` is equal to `b` according to IEEE rules.
 
@@ -75,14 +62,5 @@ This is not a reflexive relation.
 -/
 protected def beq (a b : UnpackedFloat) : Bool :=
   a.compare b == some .eq
-
-instance : BEq UnpackedFloat where
-  beq a b := a.beq b
-
-instance : Min UnpackedFloat :=
-  Min.leftLeaningOfLE _
-
-instance : Max UnpackedFloat :=
-  Max.leftLeaningOfLE _
 
 end Float.Model.UnpackedFloat

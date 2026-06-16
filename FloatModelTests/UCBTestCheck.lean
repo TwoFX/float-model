@@ -35,11 +35,11 @@ Each test vector has the form `<op> <rounding> <relation> <flags> <words...>` wh
 open Float.Model
 
 def operations : List (String × Operation) :=
-  [("addd", .binary '+' (modelBinop UnpackedFloat.add)),
-   ("subd", .binary '-' (modelBinop UnpackedFloat.sub)),
-   ("muld", .binary '*' (modelBinop UnpackedFloat.mul)),
-   ("divd", .binary '/' (modelBinop UnpackedFloat.div)),
-   ("sqrtd", .unary "sqrt" (modelUnop UnpackedFloat.sqrt))
+  [("addd", .binary '+' (modelBinop Float.Model.add)),
+   ("subd", .binary '-' (modelBinop Float.Model.sub)),
+   ("muld", .binary '*' (modelBinop Float.Model.mul)),
+   ("divd", .binary '/' (modelBinop Float.Model.div)),
+   ("sqrtd", .unary "sqrt" (modelUnop Float.Model.sqrt))
    ]
 
 /-- Combines a list of 32-bit hexadecimal words into `binary64` bit patterns. -/

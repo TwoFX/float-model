@@ -33,7 +33,7 @@ def spec : Float.Model.Format where
   (UnpackedFloat.finite .positive 0b1111 1 (by decide))
 
 def subSoft (x y : Float) : Float :=
-  (UnpackedFloat.sub Format.binary64 (.ofFloat x) (.ofFloat y)).toFloat
+  Float.ofBits (Float.Model.sub (.ofBits x.toBits) (.ofBits y.toBits)).toBits
 
 def floats : Array Float := #[
   1,

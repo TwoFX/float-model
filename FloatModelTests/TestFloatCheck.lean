@@ -33,14 +33,14 @@ of the form `<a> <b> <expected> <flags>`, a unary operation against lines of the
 `<a> <expected> <flags>`.
 -/
 def operations : List (String × Operation) :=
-  [("f64_add", .binary '+' (modelBinop UnpackedFloat.add)),
-   ("f64_sub", .binary '-' (modelBinop UnpackedFloat.sub)),
-   ("f64_mul", .binary '*' (modelBinop UnpackedFloat.mul)),
-   ("f64_div", .binary '/' (modelBinop UnpackedFloat.div)),
-   ("f64_sqrt", .unary "sqrt" (modelUnop UnpackedFloat.sqrt)),
-   ("f64_eq", .binary '=' (modelCompare UnpackedFloat.beq)),
-   ("f64_le", .binary '≤' (modelCompare UnpackedFloat.le)),
-   ("f64_lt", .binary '<' (modelCompare UnpackedFloat.lt))
+  [("f64_add", .binary '+' (modelBinop Float.Model.add)),
+   ("f64_sub", .binary '-' (modelBinop Float.Model.sub)),
+   ("f64_mul", .binary '*' (modelBinop Float.Model.mul)),
+   ("f64_div", .binary '/' (modelBinop Float.Model.div)),
+   ("f64_sqrt", .unary "sqrt" (modelUnop Float.Model.sqrt)),
+   ("f64_eq", .binary '=' (modelCompare Float.Model.beq)),
+   ("f64_le", .binary '≤' (modelCompare Float.Model.le)),
+   ("f64_lt", .binary '<' (modelCompare Float.Model.lt))
    ]
 
 public def main (args : List String) : IO UInt32 := do

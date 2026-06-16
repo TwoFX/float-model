@@ -12,7 +12,7 @@ Helpers shared by the executables that check the model against external test sui
 (`TestFloatCheck` and `UCBTestCheck`).
 -/
 
-open Float.Model Float.Model.UnpackedFloat
+open Float.Model
 
 public def hexToUInt64? (s : String) : Option UInt64 :=
   if s.isEmpty then none
@@ -32,26 +32,21 @@ public def toHex (x : UInt64) : String :=
 public def isNaNBits (x : UInt64) : Bool :=
   (x >>> 52) &&& 0x7FF == 0x7FF && (x &&& 0x000FFFFFFFFFFFFF) != 0
 
-public def modelBinop (op : Format → UnpackedFloat → UnpackedFloat → UnpackedFloat)
+public def modelBinop (op : Float.Model → Float.Model → Float.Model)
     (a b : UInt64) : UInt64 :=
-  let ua := unpack Format.binary64 a.toBitVec
-  let ub := unpack Format.binary64 b.toBitVec
-  UInt64.ofBitVec (pack Format.binary64 (op Format.binary64 ua ub))
+  (op (Float.Model.ofBits a) (Float.Model.ofBits b)).toBits
 
-public def modelUnop (op : Format → UnpackedFloat → UnpackedFloat)
+public def modelUnop (op : Float.Model → Float.Model)
     (a : UInt64) : UInt64 :=
-  let ua := unpack Format.binary64 a.toBitVec
-  UInt64.ofBitVec (pack Format.binary64 (op Format.binary64 ua))
+  (op (Float.Model.ofBits a)).toBits
 
 /--
-Adapts a comparison on `UnpackedFloat`s to operate on `binary64` bit patterns,
+Adapts a comparison on `Float.Model`s to operate on `binary64` bit patterns,
 returning `1` for a true result and `0` for a false one to match the boolean
 result column TestFloat emits for `f64_eq`, `f64_le`, and `f64_lt`.
 -/
-public def modelCompare (op : UnpackedFloat → UnpackedFloat → Bool) (a b : UInt64) : UInt64 :=
-  let ua := unpack Format.binary64 a.toBitVec
-  let ub := unpack Format.binary64 b.toBitVec
-  if op ua ub then 1 else 0
+public def modelCompare (op : Float.Model → Float.Model → Bool) (a b : UInt64) : UInt64 :=
+  if op (Float.Model.ofBits a) (Float.Model.ofBits b) then 1 else 0
 
 public inductive Operation where
   /-- A binary operation on `binary64` bit patterns. -/
