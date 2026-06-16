@@ -5,15 +5,13 @@ Authors: Julia M. Himmel
 -/
 module
 
-public import FloatModel.Float.Basic
+public import FloatModel.Model.Unpacked.Basic
 
 -- This file is part of the logical model for floats which authors of float libraries
 -- need to rely on.
 @[expose] public section
 
-namespace FloatModel
-
-namespace UnpackedFloat
+namespace Float.Model.UnpackedFloat
 
 /--
 Returns `true` if the float represents a real number, i.e., it is neither infinite nor `NaN`.
@@ -38,6 +36,4 @@ def isNaN : UnpackedFloat → Bool
   | .notANumber => true
   | _ => false
 
-end UnpackedFloat
-
-end FloatModel
+end Float.Model.UnpackedFloat

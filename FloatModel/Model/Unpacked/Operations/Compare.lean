@@ -5,15 +5,13 @@ Authors: Julia M. Himmel
 -/
 module
 
-public import FloatModel.Float.Basic
+public import FloatModel.Model.Unpacked.Basic
 
 -- This file is part of the logical model for floats which authors of float libraries
 -- need to rely on.
 @[expose] public section
 
-namespace FloatModel
-
-namespace UnpackedFloat
+namespace Float.Model.UnpackedFloat
 
 /--
 Computes the ordering between the two floats as specificed by IEEE. Returns an
@@ -85,6 +83,4 @@ instance : Min UnpackedFloat :=
 instance : Max UnpackedFloat :=
   Max.leftLeaningOfLE _
 
-end UnpackedFloat
-
-end FloatModel
+end Float.Model.UnpackedFloat

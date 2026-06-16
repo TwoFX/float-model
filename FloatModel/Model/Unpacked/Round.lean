@@ -5,15 +5,15 @@ Authors: Julia M. Himmel
 -/
 module
 
-public import FloatModel.Float.Basic
-public import FloatModel.Float.FloatSpec
-public import FloatModel.Sign
+public import FloatModel.Model.Unpacked.Basic
+public import FloatModel.Model.Format.Basic
+public import FloatModel.Model.Unpacked.Sign
 
 -- This file is part of the logical model for floats which authors of float libraries
 -- need to rely on.
 @[expose] public section
 
-namespace FloatModel
+namespace Float.Model.UnpackedFloat
 
 /--
 Suppose given a real number `x : ℝ`. We can compute the binary expansion
@@ -111,7 +111,7 @@ Computes the target exponent for the given mantissa and exponent and shifts the
 mantissa and exponent and initial accuracy to the target exponent, returning
 the new extended mantissa and exponent.
 -/
-def shiftToTargetExponent (spec : FloatSpec) (mantissa : Nat) (exponent : Int)
+def shiftToTargetExponent (spec : Format) (mantissa : Nat) (exponent : Int)
     (accuracy : Accuracy) : ExtendedMantissa × Int :=
   let targetExponent := spec.targetExponent (totalExponent mantissa exponent)
   let shiftAmount := (targetExponent - exponent).toNat -- negative to 0
@@ -120,14 +120,14 @@ def shiftToTargetExponent (spec : FloatSpec) (mantissa : Nat) (exponent : Int)
 
 /--
 Given a finite float represented by a sign, mantissa and exponent, together with an
-`Accuracy` datum, round it to conform to the given `FloatSpec`.
+`Accuracy` datum, round it to conform to the given `Format`.
 
 Important: this function will only drop bits from the mantissa and increase the exponent,
 not the other way around. The result will only conform to the given specification if
 the exponent was not too large to begin with. If this may be the case, you should call
 `round` instead.
 -/
-def roundWithAccuracy (spec : FloatSpec) (sign : Sign) (mantissa : Nat) (exponent : Int) (accuracy : Accuracy) : UnpackedFloat :=
+def roundWithAccuracy (spec : Format) (sign : Sign) (mantissa : Nat) (exponent : Int) (accuracy : Accuracy) : UnpackedFloat :=
   -- First shift: this performs the bulk of the shifting
   let (em₁, e₁) := shiftToTargetExponent spec mantissa exponent accuracy
   -- Round mantissa
@@ -152,25 +152,25 @@ def decreaseExponent (mantissa : Nat) (exponent : Int) (targetExponent : Int) : 
 
 /--
 Given a finite float represented by a sign, mantissa and exponent,
-round it to conform to the given `FloatSpec`.
+round it to conform to the given `Format`.
 
 If necessary, this will both decrease and increase the exponent.
 -/
-def round (spec : FloatSpec) (sign : Sign) (mantissa : Nat) (exponent : Int) : UnpackedFloat :=
+def round (spec : Format) (sign : Sign) (mantissa : Nat) (exponent : Int) : UnpackedFloat :=
   let targetExponent := spec.targetExponent (totalExponent mantissa exponent)
   let (mantissa, exponent) := decreaseExponent mantissa exponent targetExponent
   roundWithAccuracy spec sign mantissa exponent .exact
 
 /--
 Given a finite float represented as a signed mantissa and an exponent, round it to conform to the
-given `FloatSpec`.
+given `Format`.
 
 If necessary, this will both decrease and increase the exponent.
 -/
-def normalize (spec : FloatSpec) (mantissa : Int) (exponent : Int) (zeroSign : Sign) : UnpackedFloat :=
+def normalize (spec : Format) (mantissa : Int) (exponent : Int) (zeroSign : Sign) : UnpackedFloat :=
   match compare mantissa 0 with
   | .lt => round spec .negative (-mantissa).toNat exponent
   | .eq => .zero zeroSign
   | .gt => round spec .positive mantissa.toNat exponent
 
-end FloatModel
+end Float.Model.UnpackedFloat

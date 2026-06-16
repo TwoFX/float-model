@@ -5,23 +5,21 @@ Authors: Julia M. Himmel
 -/
 module
 
-public import FloatModel.Float.Round
+public import FloatModel.Model.Unpacked.Round
 public import FloatModel.Contrib.Sqrt
 
 -- This file is part of the logical model for floats which authors of float libraries
 -- need to rely on.
 @[expose] public section
 
-namespace FloatModel
-
-namespace UnpackedFloat
+namespace Float.Model.UnpackedFloat
 
 /--
 Computes a `(mantissa, exponent)` pair for the square root with enough bits to populate the mantissa
 for the given specification. Also returns an `Accuracy` stating how the returned pair relates to
 the infinitely precise quotient.
 -/
-def sqrtCore (spec : FloatSpec) (m : Nat) (e : Int) : Nat × Int × Accuracy :=
+def sqrtCore (spec : Format) (m : Nat) (e : Int) : Nat × Int × Accuracy :=
   -- Here we shift so that the input is represented as `m * 2 ^ (2 * targetExponent)`, where `m` has
   -- so many bits that `sqrt m` still has enough bits for the specified format.
   let targetExponent := min (e.ediv 2) (spec.targetExponent ((totalExponent m e + 1).ediv 2))
@@ -41,7 +39,7 @@ def sqrtCore (spec : FloatSpec) (m : Nat) (e : Int) : Nat × Int × Accuracy :=
 Computes the square root of a floating-point number and rounds the result according to the given
 specification.
 -/
-def sqrt (spec : FloatSpec) : UnpackedFloat → UnpackedFloat
+def sqrt (spec : Format) : UnpackedFloat → UnpackedFloat
   | .notANumber => .notANumber
   | .infinity .positive => .infinity .positive
   | .infinity .negative => .notANumber
@@ -51,6 +49,4 @@ def sqrt (spec : FloatSpec) : UnpackedFloat → UnpackedFloat
     let (m, e, acc) := sqrtCore spec m e
     roundWithAccuracy spec .positive m e acc
 
-end UnpackedFloat
-
-end FloatModel
+end Float.Model.UnpackedFloat

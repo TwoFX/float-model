@@ -9,7 +9,7 @@ module
 -- need to rely on.
 @[expose] public section
 
-namespace FloatModel
+namespace Float.Model.UnpackedFloat
 
 /--
 Inductive with two constructors `negative` and `positive` for representing sign bits in
@@ -74,4 +74,4 @@ def ofBitVec (b  : BitVec 1) : Sign :=
 
 end Sign
 
-end FloatModel
+end Float.Model.UnpackedFloat

@@ -5,7 +5,7 @@ Authors: Julia M. Himmel
 -/
 module
 
-import FloatModel.Float
+import FloatModel
 import FloatModelTests.CheckUtil
 
 /-!
@@ -32,7 +32,7 @@ Each test vector has the form `<op> <rounding> <relation> <flags> <words...>` wh
   value as two 32-bit hexadecimal words, most significant first.
 -/
 
-open FloatModel
+open Float.Model
 
 def operations : List (String × Operation) :=
   [("addd", .binary '+' (modelBinop UnpackedFloat.add)),

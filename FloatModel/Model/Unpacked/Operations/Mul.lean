@@ -5,21 +5,19 @@ Authors: Julia M. Himmel
 -/
 module
 
-public import FloatModel.Float.Round
+public import FloatModel.Model.Unpacked.Round
 
 -- This file is part of the logical model for floats which authors of float libraries
 -- need to rely on.
 @[expose] public section
 
-namespace FloatModel
-
-namespace UnpackedFloat
+namespace Float.Model.UnpackedFloat
 
 /--
 Computes the product of two floating-point numbers and rounds the result according to
 the given specification.
 -/
-def mul (spec : FloatSpec) : UnpackedFloat → UnpackedFloat → UnpackedFloat
+def mul (spec : Format) : UnpackedFloat → UnpackedFloat → UnpackedFloat
   | .notANumber, _ => .notANumber
   | _, .notANumber => .notANumber
   | .infinity sign₁, .infinity sign₂ => .infinity (sign₁ * sign₂)
@@ -33,6 +31,4 @@ def mul (spec : FloatSpec) : UnpackedFloat → UnpackedFloat → UnpackedFloat
   | .finite s₁ m₁ e₁ _, .finite s₂ m₂ e₂ _ =>
     roundWithAccuracy spec (s₁ * s₂) (m₁ * m₂) (e₁ + e₂) .exact
 
-end UnpackedFloat
-
-end FloatModel
+end Float.Model.UnpackedFloat

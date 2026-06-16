@@ -5,7 +5,7 @@ Authors: Julia M. Himmel
 -/
 module
 
-import FloatModel.Float
+import FloatModel
 import FloatModelTests.CheckUtil
 
 /-!
@@ -25,7 +25,7 @@ ignored since the model does not compute them. NaN results are compared as a cla
 bit-for-bit, since the model produces a canonical NaN rather than propagating payloads.
 -/
 
-open FloatModel
+open Float.Model
 
 /--
 The operations the checker knows about. A binary operation is checked against lines

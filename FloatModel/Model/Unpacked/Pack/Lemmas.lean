@@ -5,39 +5,30 @@ Authors: Julia M. Himmel
 -/
 module
 
-public import FloatModel.Float.Model
+public import FloatModel.Model.Unpacked.Pack.Basic
+public import FloatModel.Model.Format.Valid
 
 
 -- This file is part of the logical model for floats which authors of float libraries
 -- need to rely on.
 @[expose] public section
 
-namespace FloatModel
+namespace Float.Model.UnpackedFloat
 
 @[simp]
-theorem unpackMantissa_packComponents {spec : FloatSpec} {sign exponent mantissa} :
+theorem unpackMantissa_packComponents {spec : Format} {sign exponent mantissa} :
     unpackMantissa (packComponents spec sign exponent mantissa) = mantissa := by
   ext i hi
   simp [unpackMantissa, packComponents, BitVec.getLsbD_eq_getElem, BitVec.getLsbD_append, hi]
 
 @[simp]
-theorem unpackExponent_packComponents {spec : FloatSpec} {sign exponent mantissa} :
+theorem unpackExponent_packComponents {spec : Format} {sign exponent mantissa} :
     unpackExponent (packComponents spec sign exponent mantissa) = exponent := by
   ext i hi
   simp [unpackExponent, packComponents, BitVec.getLsbD_eq_getElem, BitVec.getLsbD_append, hi]
 
 @[simp]
-theorem BitVec.zero_eq_neg_one_iff {w : Nat} : 0#w = (-1#w) ↔ w = 0 := by
-  simp [← BitVec.toNat_inj]
-  match w with
-  | 0 => simp
-  | w + 1 =>
-    suffices 0 ≠ 2 ^ (w + 1) - 1 by simpa
-    have : 2 ≤ 2 ^ (w + 1) := Nat.le_pow (by simp)
-    omega
-
-@[simp]
-theorem valid_pack {spec : FloatSpec} {f : UnpackedFloat} : spec.Valid (pack spec f) := by
+theorem valid_pack {spec : Format} {f : UnpackedFloat} : spec.Valid (pack spec f) := by
   refine ⟨?_⟩
   fun_cases pack with
   | case1 => simp
@@ -54,4 +45,4 @@ theorem valid_pack {spec : FloatSpec} {f : UnpackedFloat} : spec.Valid (pack spe
   | case6 s m e hm actualMantissaBits biasedExponent h₁ h₂ =>
     simp [Nat.pos_iff_ne_zero.1 spec.he]
 
-end FloatModel
+end Float.Model.UnpackedFloat

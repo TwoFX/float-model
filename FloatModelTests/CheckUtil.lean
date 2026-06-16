@@ -5,14 +5,14 @@ Authors: Julia M. Himmel
 -/
 module
 
-public import FloatModel.Float
+public import FloatModel
 
 /-!
 Helpers shared by the executables that check the model against external test suites
 (`TestFloatCheck` and `UCBTestCheck`).
 -/
 
-open FloatModel
+open Float.Model Float.Model.UnpackedFloat
 
 public def hexToUInt64? (s : String) : Option UInt64 :=
   if s.isEmpty then none
@@ -32,16 +32,16 @@ public def toHex (x : UInt64) : String :=
 public def isNaNBits (x : UInt64) : Bool :=
   (x >>> 52) &&& 0x7FF == 0x7FF && (x &&& 0x000FFFFFFFFFFFFF) != 0
 
-public def modelBinop (op : FloatModel.FloatSpec → UnpackedFloat → UnpackedFloat → UnpackedFloat)
+public def modelBinop (op : Format → UnpackedFloat → UnpackedFloat → UnpackedFloat)
     (a b : UInt64) : UInt64 :=
-  let ua := unpack FloatSpec.binary64 a.toBitVec
-  let ub := unpack FloatSpec.binary64 b.toBitVec
-  UInt64.ofBitVec (pack FloatSpec.binary64 (op FloatSpec.binary64 ua ub))
+  let ua := unpack Format.binary64 a.toBitVec
+  let ub := unpack Format.binary64 b.toBitVec
+  UInt64.ofBitVec (pack Format.binary64 (op Format.binary64 ua ub))
 
-public def modelUnop (op : FloatModel.FloatSpec → UnpackedFloat → UnpackedFloat)
+public def modelUnop (op : Format → UnpackedFloat → UnpackedFloat)
     (a : UInt64) : UInt64 :=
-  let ua := unpack FloatSpec.binary64 a.toBitVec
-  UInt64.ofBitVec (pack FloatSpec.binary64 (op FloatSpec.binary64 ua))
+  let ua := unpack Format.binary64 a.toBitVec
+  UInt64.ofBitVec (pack Format.binary64 (op Format.binary64 ua))
 
 /--
 Adapts a comparison on `UnpackedFloat`s to operate on `binary64` bit patterns,
@@ -49,8 +49,8 @@ returning `1` for a true result and `0` for a false one to match the boolean
 result column TestFloat emits for `f64_eq`, `f64_le`, and `f64_lt`.
 -/
 public def modelCompare (op : UnpackedFloat → UnpackedFloat → Bool) (a b : UInt64) : UInt64 :=
-  let ua := unpack FloatSpec.binary64 a.toBitVec
-  let ub := unpack FloatSpec.binary64 b.toBitVec
+  let ua := unpack Format.binary64 a.toBitVec
+  let ub := unpack Format.binary64 b.toBitVec
   if op ua ub then 1 else 0
 
 public inductive Operation where

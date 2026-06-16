@@ -5,14 +5,15 @@ Authors: Julia M. Himmel
 -/
 module
 
-public import FloatModel.Sign
+public import FloatModel.Model.Unpacked.Sign
 
 -- This file is part of the logical model for floats which authors of float libraries
 -- need to rely on.
 @[expose] public section
 
-namespace FloatModel
+namespace Float.Model
 
+open UnpackedFloat in
 /--
 An inductive type representing a floating-point number with constructors for signed infinity,
 not-a-number without payload, signed zero, and finite floats with a sign, positive natural
@@ -33,4 +34,4 @@ inductive UnpackedFloat where
   | finite (sign : Sign) (mantissa : Nat) (exponent : Int) (mantissa_pos : 0 < mantissa) : UnpackedFloat
 deriving Repr, BEq
 
-end FloatModel
+end Float.Model

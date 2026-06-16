@@ -5,15 +5,13 @@ Authors: Julia M. Himmel
 -/
 module
 
-public import FloatModel.Float.Basic
+public import FloatModel.Model.Unpacked.Basic
 
 -- This file is part of the logical model for floats which authors of float libraries
 -- need to rely on.
 @[expose] public section
 
-namespace FloatModel
-
-namespace UnpackedFloat
+namespace Float.Model.UnpackedFloat
 
 /-- Negates the given float. -/
 def neg : UnpackedFloat → UnpackedFloat
@@ -29,6 +27,4 @@ def abs : UnpackedFloat → UnpackedFloat
   | .zero _ => .zero .positive
   | .finite _ m e hm => .finite .positive m e hm
 
-end UnpackedFloat
-
-end FloatModel
+end Float.Model.UnpackedFloat

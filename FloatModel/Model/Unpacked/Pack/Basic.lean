@@ -5,31 +5,32 @@ Authors: Julia M. Himmel
 -/
 module
 
-public import FloatModel.Float.Basic
-public import FloatModel.Float.FloatSpec
+public import FloatModel.Model.Unpacked.Basic
+public import FloatModel.Model.Format.Basic
+public import FloatModel.Contrib.Misc
 
 -- This file is part of the logical model for floats which authors of float libraries
 -- need to rely on.
 @[expose] public section
 
-namespace FloatModel
+namespace Float.Model.UnpackedFloat
 
 /-- Creates a packed float from a sign, an exponent and a mantissa. -/
-def packComponents (spec : FloatSpec) (sign : Sign)
+def packComponents (spec : Format) (sign : Sign)
     (exponent : BitVec spec.exponentBits)
     (mantissa : BitVec spec.mantissaBitsWithoutImplicit) : BitVec spec.numBits :=
   sign.toBitVec ++ exponent ++ mantissa
 
 /-- Creates the packed signed infinity representation for the given specification. -/
-def packedInfinity (spec : FloatSpec) (sign : Sign) : BitVec spec.numBits :=
+def packedInfinity (spec : Format) (sign : Sign) : BitVec spec.numBits :=
   packComponents spec sign (-1#_) 0
 
 /-- Creates the canonical packed `NaN` for the given specification. -/
-def packedNaN (spec : FloatSpec) : BitVec spec.numBits :=
+def packedNaN (spec : Format) : BitVec spec.numBits :=
   packComponents spec .positive (-1#_) (1#_ <<< (spec.mantissaBitsWithoutImplicit - 1))
 
 /-- Creates the packed signed zero representation for the given specification. -/
-def packedZero (spec : FloatSpec) (sign : Sign) : BitVec spec.numBits :=
+def packedZero (spec : Format) (sign : Sign) : BitVec spec.numBits :=
   packComponents spec sign 0 0
 
 /--
@@ -38,7 +39,7 @@ Packs the given float into the format given by the specification.
 This function assumes that the float is already correctly rounded for the given specification.
 This means that the exponent must be equal to the exponent computed by `spec.targetExponent`.
 -/
-def pack (spec : FloatSpec) : UnpackedFloat → BitVec spec.numBits
+def pack (spec : Format) : UnpackedFloat → BitVec spec.numBits
   | .notANumber => packedNaN spec
   | .infinity s => packedInfinity spec s
   | .zero s => packedZero spec s
@@ -55,47 +56,25 @@ def pack (spec : FloatSpec) : UnpackedFloat → BitVec spec.numBits
       -- subnormal
       packComponents spec s 0#_ (BitVec.ofNat _ m)
 
-@[simp]
-theorem BitVec.toNat_pos {n : Nat} (b : BitVec n) : 0 < b.toNat ↔ 0#_ < b := by
-  simp [BitVec.lt_def]
-
-theorem BitVec.pos_iff_ne_zero {n : Nat} (b : BitVec n) : 0#_ < b ↔ b ≠ 0#_ := by
-  rw [BitVec.lt_def, Ne, ← BitVec.toNat_inj, BitVec.toNat_zero, Nat.pos_iff_ne_zero]
-
-theorem Nat.eq_iff_testBit_eq {n m : Nat} : n = m ↔ ∀ i, Nat.testBit n i = Nat.testBit m i := by
-  refine ⟨?_, Nat.eq_of_testBit_eq⟩
-  rintro rfl
-  simp
-
-@[simp]
-theorem Nat.or_pos {n m : Nat} : 0 < n ||| m ↔ 0 < n ∨ 0 < m := by
-  simp [Nat.pos_iff_ne_zero]
-  simp [Nat.eq_iff_testBit_eq]
-  simp [Decidable.imp_iff_or_not, exists_or, or_comm]
-
-@[simp]
-theorem Nat.shiftLeft_pos {n m : Nat} : 0 < n <<< m ↔ 0 < n := by
-  simp [Nat.pos_iff_ne_zero]
-
 /--
 Unpacks the mantissa portion of the packed float. If this is a normal number, this
 will be missing the implicit bit.
 -/
-def unpackMantissa {spec : FloatSpec} (b : BitVec spec.numBits) :
+def unpackMantissa {spec : Format} (b : BitVec spec.numBits) :
     BitVec spec.mantissaBitsWithoutImplicit :=
   b.extractLsb (spec.mantissaBitsWithoutImplicit - 1) 0 |>.cast (by have := spec.hm; omega)
 
 /--
 Unpacks the exponent portion of the packed float.
 -/
-def unpackExponent {spec : FloatSpec} (b : BitVec spec.numBits) :
+def unpackExponent {spec : Format} (b : BitVec spec.numBits) :
     BitVec spec.exponentBits :=
   b.extractLsb (spec.mantissaBitsWithoutImplicit + spec.exponentBits - 1) spec.mantissaBitsWithoutImplicit |>.cast (by have := spec.he; omega)
 
 /--
 Unpacks the sign bit of the packed float.
 -/
-def unpackSign {spec : FloatSpec} (b : BitVec spec.numBits) :
+def unpackSign {spec : Format} (b : BitVec spec.numBits) :
     BitVec 1 :=
   b.extractLsb (spec.mantissaBitsWithoutImplicit + spec.exponentBits) (spec.mantissaBitsWithoutImplicit + spec.exponentBits) |>.cast (by omega)
 
@@ -104,7 +83,7 @@ Unpacks the given float according to the given specification.
 
 The resulting float may be assumed to be correctly rounded for the given specification.
 -/
-def unpack (spec : FloatSpec) (b : BitVec spec.numBits) : UnpackedFloat :=
+def unpack (spec : Format) (b : BitVec spec.numBits) : UnpackedFloat :=
   let mantissaVec := unpackMantissa b
   let exponentVec : BitVec spec.exponentBits :=  unpackExponent b
   let unbiasedExponent : Int := (exponentVec.toNat : Int) - spec.exponentBias
@@ -126,10 +105,10 @@ def unpack (spec : FloatSpec) (b : BitVec spec.numBits) : UnpackedFloat :=
     -- normal
     .finite sign (1#1 ++ mantissaVec).toNat exponent (by simp)
 
-def UnpackedFloat.ofFloat (f : Float) : UnpackedFloat :=
-  unpack FloatSpec.binary64 f.toBits.toBitVec
+def ofFloat (f : Float) : UnpackedFloat :=
+  unpack Format.binary64 f.toBits.toBitVec
 
-def UnpackedFloat.toFloat (f : UnpackedFloat) : Float :=
-  Float.ofBits (UInt64.ofBitVec (pack FloatSpec.binary64 f))
+def toFloat (f : UnpackedFloat) : Float :=
+  Float.ofBits (UInt64.ofBitVec (pack Format.binary64 f))
 
-end FloatModel
+end Float.Model.UnpackedFloat

@@ -5,15 +5,13 @@ Authors: Julia M. Himmel
 -/
 module
 
-public import FloatModel.Float.Round
+public import FloatModel.Model.Unpacked.Round
 
 -- This file is part of the logical model for floats which authors of float libraries
 -- need to rely on.
 @[expose] public section
 
-namespace FloatModel
-
-namespace UnpackedFloat
+namespace Float.Model.UnpackedFloat
 
 /--
 Returns the accuracy corresponding to the point `y + (num/den)ulp`.
@@ -31,7 +29,7 @@ Computes a `(mantissa, exponent)` pair for the quotient with enough bits to popu
 for the given specification. Also returns an `Accuracy` stating how the returned pair relates to
 the infinitely precise quotient.
 -/
-def divCore (spec : FloatSpec) (m₁ : Nat) (e₁ : Int) (m₂ : Nat) (e₂ : Int) : Nat × Int × Accuracy :=
+def divCore (spec : Format) (m₁ : Nat) (e₁ : Int) (m₂ : Nat) (e₂ : Int) : Nat × Int × Accuracy :=
   -- Strategy: decrease the exponent here far enough so that we definitely get enough bits in the
   -- quotient `m / m₂`. We take the `min` because we don't want to increase the exponent; this happens
   -- later in the rounding step.
@@ -44,7 +42,7 @@ def divCore (spec : FloatSpec) (m₁ : Nat) (e₁ : Int) (m₂ : Nat) (e₂ : In
 Computes the quotient of two floating point numbers and rounds the result according to
 the given specification.
 -/
-def div (spec : FloatSpec) : UnpackedFloat → UnpackedFloat → UnpackedFloat
+def div (spec : Format) : UnpackedFloat → UnpackedFloat → UnpackedFloat
   | .notANumber, _ => .notANumber
   | _, .notANumber => .notANumber
   | .infinity _, .infinity _ => .notANumber
@@ -59,6 +57,4 @@ def div (spec : FloatSpec) : UnpackedFloat → UnpackedFloat → UnpackedFloat
     let (m, e, acc) := divCore spec m₁ e₁ m₂ e₂
     roundWithAccuracy spec (s₁ / s₂) m e acc
 
-end UnpackedFloat
-
-end FloatModel
+end Float.Model.UnpackedFloat
