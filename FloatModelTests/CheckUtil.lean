@@ -77,6 +77,33 @@ public def modelUnop32 (op : Float32.Model → Float32.Model)
 public def modelCompare32 (op : Float32.Model → Float32.Model → Bool) (a b : UInt64) : UInt64 :=
   if op (Float32.Model.ofBits a.toUInt32) (Float32.Model.ofBits b.toUInt32) then 1 else 0
 
+/--
+Adapts a `binary64` operation on Lean's native `Float` to operate on bit
+patterns, so the model can be checked against the hardware it models.
+-/
+public def nativeBinop (op : Float → Float → Float) (a b : UInt64) : UInt64 :=
+  (op (Float.ofBits a) (Float.ofBits b)).toBits
+
+/-- `Float` counterpart of `modelUnop`. -/
+public def nativeUnop (op : Float → Float) (a : UInt64) : UInt64 :=
+  (op (Float.ofBits a)).toBits
+
+/-- `Float` counterpart of `modelCompare`. -/
+public def nativeCompare (op : Float → Float → Bool) (a b : UInt64) : UInt64 :=
+  if op (Float.ofBits a) (Float.ofBits b) then 1 else 0
+
+/-- `Float32` counterpart of `nativeBinop`; bit patterns are held in the low 32 bits. -/
+public def nativeBinop32 (op : Float32 → Float32 → Float32) (a b : UInt64) : UInt64 :=
+  (op (Float32.ofBits a.toUInt32) (Float32.ofBits b.toUInt32)).toBits.toUInt64
+
+/-- `Float32` counterpart of `nativeUnop`. -/
+public def nativeUnop32 (op : Float32 → Float32) (a : UInt64) : UInt64 :=
+  (op (Float32.ofBits a.toUInt32)).toBits.toUInt64
+
+/-- `Float32` counterpart of `nativeCompare`. -/
+public def nativeCompare32 (op : Float32 → Float32 → Bool) (a b : UInt64) : UInt64 :=
+  if op (Float32.ofBits a.toUInt32) (Float32.ofBits b.toUInt32) then 1 else 0
+
 public inductive Operation where
   /-- A binary operation on bit patterns. -/
   | binary (symbol : Char) (op : UInt64 → UInt64 → UInt64)

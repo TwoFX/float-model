@@ -9,8 +9,11 @@ import FloatModel
 import FloatModelTests.CheckUtil
 
 /-!
-Checks the model's `binary32` and `binary64` operations against the test vectors
-committed under `test-vectors/`. Running
+Checks the `binary32` and `binary64` operations against the test vectors
+committed under `test-vectors/`. Each file is run against two backends: the
+`model` (`Float.Model`/`Float32.Model`) and `native`, Lean's built-in `Float`
+and `Float32` operations (the hardware the model models, included as a sanity
+check on the harness and vectors). Running
 
   lake exe testfloat-check
 
@@ -39,28 +42,61 @@ open Float.Model
 def vectorsDir : System.FilePath := "test-vectors"
 
 /--
-The operations the checker knows about, keyed by the `<precision>_<operation>`
-basename of a vector file (e.g. `f64_add`, `f32_sqrt`). A binary operation is
-checked against lines of the form `<a> <b> <expected> <flags>`, a unary
-operation against lines of the form `<a> <expected> <flags>`.
+A named set of implementations, keyed by the `<precision>_<operation>` basename
+of a vector file (e.g. `f64_add`, `f32_sqrt`). A binary operation is checked
+against lines of the form `<a> <b> <expected> <flags>`, a unary operation
+against lines of the form `<a> <expected> <flags>`.
 -/
-def operations : List (String × Check) :=
-  [("f64_add", f64Check (.binary '+' (modelBinop Float.Model.add))),
-   ("f64_sub", f64Check (.binary '-' (modelBinop Float.Model.sub))),
-   ("f64_mul", f64Check (.binary '*' (modelBinop Float.Model.mul))),
-   ("f64_div", f64Check (.binary '/' (modelBinop Float.Model.div))),
-   ("f64_sqrt", f64Check (.unary "sqrt" (modelUnop Float.Model.sqrt))),
-   ("f64_eq", f64Check (.binary '=' (modelCompare Float.Model.beq))),
-   ("f64_le", f64Check (.binary '≤' (modelCompare Float.Model.le))),
-   ("f64_lt", f64Check (.binary '<' (modelCompare Float.Model.lt))),
-   ("f32_add", f32Check (.binary '+' (modelBinop32 Float32.Model.add))),
-   ("f32_sub", f32Check (.binary '-' (modelBinop32 Float32.Model.sub))),
-   ("f32_mul", f32Check (.binary '*' (modelBinop32 Float32.Model.mul))),
-   ("f32_div", f32Check (.binary '/' (modelBinop32 Float32.Model.div))),
-   ("f32_sqrt", f32Check (.unary "sqrt" (modelUnop32 Float32.Model.sqrt))),
-   ("f32_eq", f32Check (.binary '=' (modelCompare32 Float32.Model.beq))),
-   ("f32_le", f32Check (.binary '≤' (modelCompare32 Float32.Model.le))),
-   ("f32_lt", f32Check (.binary '<' (modelCompare32 Float32.Model.lt)))]
+structure Backend where
+  /-- Short name shown in the output, e.g. `model` or `native`. -/
+  name : String
+  /-- The implementations this backend provides, keyed by vector-file basename. -/
+  operations : List (String × Check)
+
+/-- The `Float.Model`/`Float32.Model` implementations. -/
+def modelBackend : Backend where
+  name := "model"
+  operations :=
+    [("f64_add", f64Check (.binary '+' (modelBinop Float.Model.add))),
+     ("f64_sub", f64Check (.binary '-' (modelBinop Float.Model.sub))),
+     ("f64_mul", f64Check (.binary '*' (modelBinop Float.Model.mul))),
+     ("f64_div", f64Check (.binary '/' (modelBinop Float.Model.div))),
+     ("f64_sqrt", f64Check (.unary "sqrt" (modelUnop Float.Model.sqrt))),
+     ("f64_eq", f64Check (.binary '=' (modelCompare Float.Model.beq))),
+     ("f64_le", f64Check (.binary '≤' (modelCompare Float.Model.le))),
+     ("f64_lt", f64Check (.binary '<' (modelCompare Float.Model.lt))),
+     ("f32_add", f32Check (.binary '+' (modelBinop32 Float32.Model.add))),
+     ("f32_sub", f32Check (.binary '-' (modelBinop32 Float32.Model.sub))),
+     ("f32_mul", f32Check (.binary '*' (modelBinop32 Float32.Model.mul))),
+     ("f32_div", f32Check (.binary '/' (modelBinop32 Float32.Model.div))),
+     ("f32_sqrt", f32Check (.unary "sqrt" (modelUnop32 Float32.Model.sqrt))),
+     ("f32_eq", f32Check (.binary '=' (modelCompare32 Float32.Model.beq))),
+     ("f32_le", f32Check (.binary '≤' (modelCompare32 Float32.Model.le))),
+     ("f32_lt", f32Check (.binary '<' (modelCompare32 Float32.Model.lt)))]
+
+/-- Lean's native `Float`/`Float32` implementations (the hardware the model models). -/
+def nativeBackend : Backend where
+  name := "native"
+  operations :=
+    [("f64_add", f64Check (.binary '+' (nativeBinop Float.add))),
+     ("f64_sub", f64Check (.binary '-' (nativeBinop Float.sub))),
+     ("f64_mul", f64Check (.binary '*' (nativeBinop Float.mul))),
+     ("f64_div", f64Check (.binary '/' (nativeBinop Float.div))),
+     ("f64_sqrt", f64Check (.unary "sqrt" (nativeUnop Float.sqrt))),
+     ("f64_eq", f64Check (.binary '=' (nativeCompare Float.beq))),
+     ("f64_le", f64Check (.binary '≤' (nativeCompare (fun a b => decide (a ≤ b))))),
+     ("f64_lt", f64Check (.binary '<' (nativeCompare (fun a b => decide (a < b))))),
+     ("f32_add", f32Check (.binary '+' (nativeBinop32 Float32.add))),
+     ("f32_sub", f32Check (.binary '-' (nativeBinop32 Float32.sub))),
+     ("f32_mul", f32Check (.binary '*' (nativeBinop32 Float32.mul))),
+     ("f32_div", f32Check (.binary '/' (nativeBinop32 Float32.div))),
+     ("f32_sqrt", f32Check (.unary "sqrt" (nativeUnop32 Float32.sqrt))),
+     ("f32_eq", f32Check (.binary '=' (nativeCompare32 Float32.beq))),
+     ("f32_le", f32Check (.binary '≤' (nativeCompare32 (fun a b => decide (a ≤ b))))),
+     ("f32_lt", f32Check (.binary '<' (nativeCompare32 (fun a b => decide (a < b)))))]
+
+/-- The backends each vector file is checked against. -/
+def backends : List Backend := [modelBackend, nativeBackend]
 
 /-- All `*.txt.gz` vector files under `dir`, recursively. -/
 partial def gzVectorFiles (dir : System.FilePath) : IO (Array System.FilePath) := do
@@ -107,21 +143,34 @@ public def main (args : List String) : IO UInt32 := do
     let label := s!"{suite}/{key}"
     if !filters.isEmpty && !filters.any (containsSubstr label ·) then
       continue
-    let some (_, check) := operations.find? (·.1 == key)
-      | IO.eprintln s!"error: {path} names unknown operation '{key}'"; return 2
+    unless backends.all (·.operations.any (·.1 == key)) do
+      IO.eprintln s!"error: {path} names unknown operation '{key}'"; return 2
 
-    -- Decompress the vector file by streaming `gzip -dc <path>`.
+    -- Decompress the vector file once by streaming `gzip -dc <path>`, then check
+    -- the materialized lines against every backend.
     let child ← IO.Process.spawn
       { cmd := "gzip", args := #["-dc", path.toString], stdout := .piped }
     let stdout := child.stdout
-    let mut total := 0
-    let mut failures := 0
+    let mut lines := #[]
     let mut done := false
     while !done do
       let line ← stdout.getLine
       if line.isEmpty then
         done := true
       else
+        lines := lines.push line
+    let exit ← child.wait
+    if exit != 0 then
+      IO.eprintln s!"error: gzip -dc {path} exited with status {exit}"
+      return 2
+
+    for backend in backends do
+      let some (_, check) := backend.operations.find? (·.1 == key)
+        | continue
+      let blabel := s!"{label} [{backend.name}]"
+      let mut total := 0
+      let mut failures := 0
+      for line in lines do
         let tokens := line.trimAscii.toString.split " " |>.filter (!·.isEmpty) |>.toStringList
         unless tokens.isEmpty do
           let parsed : Option (String × UInt64 × UInt64) :=
@@ -132,7 +181,7 @@ public def main (args : List String) : IO UInt32 := do
               some (s!"{name}({check.toHex a})", op a, expected)
             | _, _ => none
           match parsed with
-          | none => IO.eprintln s!"malformed line in {label}: {line.trimAscii.toString}"
+          | none => IO.eprintln s!"malformed line in {blabel}: {line.trimAscii.toString}"
           | some (description, actual, expected) =>
             total := total + 1
             let ok := actual == expected || (check.isNaN actual && check.isNaN expected)
@@ -141,15 +190,11 @@ public def main (args : List String) : IO UInt32 := do
               if shown < maxShown then
                 shown := shown + 1
                 IO.eprintln
-                  s!"FAIL [{label}]: {description} = {check.toHex expected}, \
-                     model returned {check.toHex actual}"
-    let exit ← child.wait
-    if exit != 0 then
-      IO.eprintln s!"error: gzip -dc {path} exited with status {exit}"
-      return 2
-    IO.println s!"{label}: {total} tests, {failures} failures"
-    grandTotal := grandTotal + total
-    grandFailures := grandFailures + failures
+                  s!"FAIL [{blabel}]: {description} = {check.toHex expected}, \
+                     {backend.name} returned {check.toHex actual}"
+      IO.println s!"{blabel}: {total} tests, {failures} failures"
+      grandTotal := grandTotal + total
+      grandFailures := grandFailures + failures
     ran := ran + 1
 
   if grandFailures > shown then
