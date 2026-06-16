@@ -7,6 +7,7 @@ module
 
 import FloatModel
 import FloatModelTests.CheckUtil
+import Std.Time
 
 /-!
 Checks the `binary32` and `binary64` operations against the test vectors
@@ -34,9 +35,15 @@ propagating payloads.
 The committed vectors come from three suites (one subdirectory each); see
 `test-vectors/README.md` for how they are produced. By default only the first 20
 failures are shown; pass `--all` to show them all.
+
+Each file is decompressed and its lines parsed into operand/expected bit patterns
+exactly once; the per-backend wall-clock time printed alongside each result
+(measured with `Std.Time.Timestamp`/`Duration`) therefore covers only the
+operations themselves, letting the model be compared against the native hardware.
 -/
 
 open Float.Model
+open Std.Time (Timestamp Duration)
 
 /-- The directory holding the committed test-vector files, relative to the repo root. -/
 def vectorsDir : System.FilePath := "test-vectors"
@@ -120,6 +127,39 @@ def containsSubstr (s sub : String) : Bool := (s.splitOn sub).length > 1
 /-- The number of failures shown before the rest are suppressed unless `--all` is given. -/
 def defaultMaxShown : Nat := 20
 
+/--
+A single parsed vector line: the operand bit pattern(s) and the expected result.
+The second operand `b` is unused for unary operations.
+-/
+structure Sample where
+  a : UInt64
+  b : UInt64
+  expected : UInt64
+
+/--
+Parse the decompressed `lines` of a vector file into `Sample`s, doing the hex
+decoding once per file rather than once per backend. `arityCheck` is consulted
+only to decide whether each line carries one operand or two — every backend that
+checks a given file agrees on its arity. Malformed lines are reported to stderr
+under `label` and skipped. Factoring this out keeps the per-backend timing in
+`main` measuring only the operations, not the parsing.
+-/
+def parseSamples (arityCheck : Check) (label : String) (lines : Array String) :
+    IO (Array Sample) := do
+  let mut samples := #[]
+  for line in lines do
+    let tokens := line.trimAscii.toString.split " " |>.filter (!·.isEmpty) |>.toStringList
+    unless tokens.isEmpty do
+      let parsed : Option Sample :=
+        match arityCheck.op, tokens.mapM hexToUInt64? with
+        | .binary _ _, some (a :: b :: expected :: _) => some { a, b, expected }
+        | .unary _ _, some (a :: expected :: _) => some { a, b := 0, expected }
+        | _, _ => none
+      match parsed with
+      | none => IO.eprintln s!"malformed line in {label}: {line.trimAscii.toString}"
+      | some s => samples := samples.push s
+  return samples
+
 public def main (args : List String) : IO UInt32 := do
   let (flags, filters) := args.partition (·.startsWith "--")
   let maxShown := if flags.contains "--all" then 1000000000 else defaultMaxShown
@@ -136,6 +176,8 @@ public def main (args : List String) : IO UInt32 := do
   let mut grandFailures := 0
   let mut shown := 0
   let mut ran := 0
+  -- Accumulated computation time per backend, aligned positionally with `backends`.
+  let mut grandDurations : Array Duration := .replicate backends.length 0
   for path in files do
     let some key := vectorKey path
       | IO.eprintln s!"skipping {path}: not a recognizable vector file"; continue
@@ -164,40 +206,49 @@ public def main (args : List String) : IO UInt32 := do
       IO.eprintln s!"error: gzip -dc {path} exited with status {exit}"
       return 2
 
-    for backend in backends do
+    -- Parse the decompressed lines once, before checking any backend, so the
+    -- timing below covers only the operations and not the hex parsing. Every
+    -- backend that checks this file agrees on the operation's arity, so the
+    -- `modelBackend` entry suffices to drive the parse.
+    let some (_, arityCheck) := modelBackend.operations.find? (·.1 == key)
+      | IO.eprintln s!"error: {path} names unknown operation '{key}'"; return 2
+    let samples ← parseSamples arityCheck label lines
+
+    for (backend, i) in backends.zipIdx do
       let some (_, check) := backend.operations.find? (·.1 == key)
         | continue
       let blabel := s!"{label} [{backend.name}]"
-      let mut total := 0
-      let mut failures := 0
-      for line in lines do
-        let tokens := line.trimAscii.toString.split " " |>.filter (!·.isEmpty) |>.toStringList
-        unless tokens.isEmpty do
-          let parsed : Option (String × UInt64 × UInt64) :=
-            match check.op, tokens.mapM hexToUInt64? with
-            | .binary symbol op, some (a :: b :: expected :: _) =>
-              some (s!"{check.toHex a} {symbol} {check.toHex b}", op a b, expected)
-            | .unary name op, some (a :: expected :: _) =>
-              some (s!"{name}({check.toHex a})", op a, expected)
-            | _, _ => none
-          match parsed with
-          | none => IO.eprintln s!"malformed line in {blabel}: {line.trimAscii.toString}"
-          | some (description, actual, expected) =>
-            total := total + 1
-            let ok := actual == expected || (check.isNaN actual && check.isNaN expected)
-            unless ok do
-              failures := failures + 1
-              if shown < maxShown then
-                shown := shown + 1
-                IO.eprintln
-                  s!"FAIL [{blabel}]: {description} = {check.toHex expected}, \
-                     {backend.name} returned {check.toHex actual}"
-      IO.println s!"{blabel}: {total} tests, {failures} failures"
-      grandTotal := grandTotal + total
-      grandFailures := grandFailures + failures
+      -- Time only the computation: run every operation, collecting the failing
+      -- samples, and keep all I/O and hex rendering out of the timed region.
+      let start ← Timestamp.now
+      let mut fails := #[]
+      for s in samples do
+        let actual := match check.op with
+          | .binary _ op => op s.a s.b
+          | .unary _ op => op s.a
+        let ok := actual == s.expected || (check.isNaN actual && check.isNaN s.expected)
+        unless ok do
+          fails := fails.push (s, actual)
+      let elapsed ← Timestamp.since start
+
+      for (s, actual) in fails do
+        if shown < maxShown then
+          shown := shown + 1
+          let description := match check.op with
+            | .binary symbol _ => s!"{check.toHex s.a} {symbol} {check.toHex s.b}"
+            | .unary name _ => s!"{name}({check.toHex s.a})"
+          IO.eprintln
+            s!"FAIL [{blabel}]: {description} = {check.toHex s.expected}, \
+               {backend.name} returned {check.toHex actual}"
+      IO.println s!"{blabel}: {samples.size} tests, {fails.size} failures ({elapsed})"
+      grandTotal := grandTotal + samples.size
+      grandFailures := grandFailures + fails.size
+      grandDurations := grandDurations.modify i (· + elapsed)
     ran := ran + 1
 
   if grandFailures > shown then
     IO.eprintln s!"... ({grandFailures - shown} further failures suppressed; pass --all to show them)"
   IO.println s!"total: {grandTotal} tests, {grandFailures} failures across {ran} file(s)"
+  for (backend, i) in backends.zipIdx do
+    IO.println s!"total time [{backend.name}]: {grandDurations[i]!}"
   return if grandFailures == 0 then 0 else 1
