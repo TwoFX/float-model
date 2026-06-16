@@ -18,6 +18,9 @@ namespace Float.Model.UnpackedFloat
 Computes the ordering between the two floats as specificed by IEEE. Returns an
 `Option Ordering` to account for the fact that `NaN` is incomparable with everything.
 Also, positive and negative zero are equal.
+
+Important: this operation only works correctly if the two inputs are in
+canonical form for a common format (see the docstring for `UnpackedFloat` for details.)
 -/
 protected def compare : UnpackedFloat → UnpackedFloat → Option Ordering
   | .notANumber, _ => none

@@ -15,6 +15,11 @@ public import Init.Data.Int.Basic
 
 namespace Float.Model
 
+/--
+The position of the most significant digit with the unit digit corresponds to `1`.
+So, for example, `1.0b` has total exponent `1`, `0.1b` has total exponent `0`,
+`0.01b` has total exponent `-1`, and so on.
+-/
 def totalExponent (mantissa : Nat) (exponent : Int) :=
   mantissa.log2 + 1 + exponent
 
@@ -51,10 +56,6 @@ abbrev numBits (spec : Format) : Nat :=
 def mantissaBits (spec : Format) : Nat :=
   1 + spec.mantissaBitsWithoutImplicit
 
-/-- The exponent that represents the infinities. -/
-def infinityExponent (spec : Format) : Nat :=
-  2 ^ (spec.exponentBits - 1)
-
 /--
 The exponent bias. In packed formats, we store the sum of the true exponent and
 the bias.
@@ -67,7 +68,7 @@ The smallest exponent possible for a number using the given specification,
 including subnormals.
 -/
 def minExponent (spec : Format) : Int :=
-  3 - spec.infinityExponent - spec.mantissaBits
+  3 - 2 ^ (spec.exponentBits - 1) - spec.mantissaBits
 
 /--
 Suppose we have written a number where `totalExponent` is the position of the

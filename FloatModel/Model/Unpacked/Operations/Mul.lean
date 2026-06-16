@@ -25,7 +25,7 @@ def mul (spec : Format) : UnpackedFloat → UnpackedFloat → UnpackedFloat
   | .infinity sign₁, .finite sign₂ .. => .infinity (sign₁ * sign₂)
   | .finite sign₁ .., .infinity sign₂ => .infinity (sign₁ * sign₂)
   | .infinity _, .zero _ => .notANumber
-  | .zero _, infinity _ => .notANumber
+  | .zero _, .infinity _ => .notANumber
   | .finite sign₁ .., .zero sign₂ => .zero (sign₁ * sign₂)
   | .zero sign₁, .finite sign₂ .. => .zero (sign₁ * sign₂)
   | .zero sign₁, .zero sign₂ => .zero (sign₁ * sign₂)

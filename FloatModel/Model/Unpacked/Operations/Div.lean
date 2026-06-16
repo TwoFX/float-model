@@ -19,7 +19,7 @@ Returns the accuracy corresponding to the point `y + (num/den)ulp`.
 
 Assumes `num < den`.
 -/
-def accuracyOfFraction (den num : Nat) : Accuracy :=
+def accuracyOfFraction (num den : Nat) : Accuracy :=
   if num = 0 then
     .exact
   else
@@ -37,7 +37,7 @@ def divCore (spec : Format) (m₁ : Nat) (e₁ : Int) (m₂ : Nat) (e₂ : Int) 
   let targetExponent := min (e₁ - e₂) (spec.targetExponent (totalExponent m₁ e₁ - totalExponent m₂ e₂))
   let shiftAmount := (e₁ - e₂ - targetExponent).toNat
   let m := m₁ <<< shiftAmount
-  (m / m₂, targetExponent, accuracyOfFraction m₂ (m % m₂))
+  (m / m₂, targetExponent, accuracyOfFraction (m % m₂) m₂)
 
 /--
 Computes the quotient of two floating point numbers and rounds the result according to

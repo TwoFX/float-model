@@ -21,9 +21,17 @@ An inductive type representing a floating-point number with constructors for sig
 not-a-number without payload, signed zero, and finite floats with a sign, positive natural
 mantissa and integral exponent.
 
-Note that finite floats do not have a unique representation in this format: multiplying the
+Finite floats do not have a unique representation in this format: multiplying the
 mantissa by two and decreasing the exponent by one yields a finite float that represents the
 same rational number.
+
+For a given `Format`, we say that an unpacked float is in canonical form if the exponent
+is equal to the `targetExponent` according to that format. Some operations on `UnpackedFloat`,
+such as `compare`, assume that the input(s) are all in canonical form for the same format.
+
+Note that an unpacked float in canonical form for a given format may not actually be
+representable in that format as the exponent is too large to fit. In this case, the `pack`
+function will overflow the float to infinity.
 -/
 inductive UnpackedFloat where
   /-- Signed infinity. -/

@@ -18,7 +18,7 @@ namespace Float.Model.UnpackedFloat
 /--
 Computes a `(mantissa, exponent)` pair for the square root with enough bits to populate the mantissa
 for the given specification. Also returns an `Accuracy` stating how the returned pair relates to
-the infinitely precise quotient.
+the infinitely precise square root.
 -/
 def sqrtCore (spec : Format) (m : Nat) (e : Int) : Nat × Int × Accuracy :=
   -- Here we shift so that the input is represented as `m * 2 ^ (2 * targetExponent)`, where `m` has
