@@ -61,6 +61,18 @@ Compute the quotient of two `Float.Model`.
 def div (a b : Float.Model) : Float.Model :=
   pack (UnpackedFloat.div Format.binary64 a.unpack b.unpack)
 
+instance : Add Float.Model where
+  add a b := a.add b
+
+instance : Sub Float.Model where
+  sub a b := a.sub b
+
+instance : Mul Float.Model where
+  mul a b := a.mul b
+
+instance : Div Float.Model where
+  div a b := a.div b
+
 /--
 Compute the square root of a `Float.Model`.
 -/
