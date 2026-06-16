@@ -5,5 +5,6 @@ Authors: Julia M. Himmel
 -/
 module
 
+prelude
 public import FloatModel.Model.Unpacked.Pack.Basic
 public import FloatModel.Model.Unpacked.Pack.Lemmas

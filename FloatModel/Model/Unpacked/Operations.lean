@@ -5,6 +5,7 @@ Authors: Julia M. Himmel
 -/
 module
 
+prelude
 public import FloatModel.Model.Unpacked.Operations.Add
 public import FloatModel.Model.Unpacked.Operations.Mul
 public import FloatModel.Model.Unpacked.Operations.Sub

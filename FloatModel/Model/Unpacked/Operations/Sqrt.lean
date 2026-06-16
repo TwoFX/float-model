@@ -5,6 +5,7 @@ Authors: Julia M. Himmel
 -/
 module
 
+prelude
 public import FloatModel.Model.Unpacked.Round
 public import FloatModel.Contrib.Sqrt
 

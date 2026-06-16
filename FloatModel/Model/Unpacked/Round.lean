@@ -5,6 +5,7 @@ Authors: Julia M. Himmel
 -/
 module
 
+prelude
 public import FloatModel.Model.Unpacked.Basic
 public import FloatModel.Model.Format.Basic
 public import FloatModel.Model.Unpacked.Sign

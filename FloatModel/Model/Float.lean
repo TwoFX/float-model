@@ -5,6 +5,7 @@ Authors: Julia M. Himmel
 -/
 module
 
+prelude
 public import FloatModel.Model.Format.Valid
 public import FloatModel.Model.Unpacked.Pack.Lemmas
 public import FloatModel.Model.Unpacked.Operations

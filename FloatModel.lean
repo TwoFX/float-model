@@ -5,5 +5,6 @@ Authors: Julia M. Himmel
 -/
 module
 
+prelude
 public import FloatModel.Model.Float
 public import FloatModel.Model.Float32

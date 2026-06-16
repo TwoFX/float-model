@@ -5,6 +5,10 @@ Authors: Julia M. Himmel
 -/
 module
 
+prelude
+public import Init.Data.Nat.Log2
+public import Init.Data.Int.Basic
+
 -- This file is part of the logical model for floats which authors of float libraries
 -- need to rely on.
 @[expose] public section

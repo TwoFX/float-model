@@ -5,6 +5,7 @@ Authors: Julia M. Himmel
 -/
 module
 
+prelude
 public import FloatModel.Model.Unpacked.Round
 
 -- This file is part of the logical model for floats which authors of float libraries

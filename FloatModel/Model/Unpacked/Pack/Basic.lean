@@ -5,9 +5,12 @@ Authors: Julia M. Himmel
 -/
 module
 
+prelude
 public import FloatModel.Model.Unpacked.Basic
 public import FloatModel.Model.Format.Basic
 public import FloatModel.Contrib.Misc
+public import Init.Data.Float
+public import Init.Data.UInt.Bitwise
 
 -- This file is part of the logical model for floats which authors of float libraries
 -- need to rely on.

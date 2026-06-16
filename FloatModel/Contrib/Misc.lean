@@ -5,6 +5,14 @@ Authors: Julia M. Himmel
 -/
 module
 
+prelude
+public import Init.Data.BitVec.Bootstrap
+public import Init.Data.BitVec.Lemmas
+public import Init.Data.Nat.Bitwise.Lemmas
+public import Init.Data.Nat.Lemmas
+public import Init.Data.Int.Pow
+public import Init.Omega
+
 /-!
 Miscellaneous lemmas about `Nat`, `BitVec`, etc. that are used throughout the model but
 are not specific to floating-point numbers.

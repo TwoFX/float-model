@@ -5,6 +5,12 @@ Authors: Julia M. Himmel
 -/
 module
 
+prelude
+public import Init.Data.Int.Basic
+public import Init.Data.BitVec.Basic
+public import Init.Data.Repr
+public import Init.Data.Ord.Basic
+
 -- This file is part of the logical model for floats which authors of float libraries
 -- need to rely on.
 @[expose] public section

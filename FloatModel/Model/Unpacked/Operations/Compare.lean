@@ -5,7 +5,9 @@ Authors: Julia M. Himmel
 -/
 module
 
+prelude
 public import FloatModel.Model.Unpacked.Basic
+public import Init.Data.Order.Factories
 
 -- This file is part of the logical model for floats which authors of float libraries
 -- need to rely on.
