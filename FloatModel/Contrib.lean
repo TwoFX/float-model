@@ -7,4 +7,3 @@ module
 
 prelude
 public import FloatModel.Contrib.Misc
-public import FloatModel.Contrib.Sqrt

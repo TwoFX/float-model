@@ -15,3 +15,4 @@ public import FloatModel.Model.Unpacked.Operations.Compare
 public import FloatModel.Model.Unpacked.Operations.Sign
 public import FloatModel.Model.Unpacked.Operations.Status
 public import FloatModel.Model.Unpacked.Operations.OfNat
+public import FloatModel.Model.Unpacked.Operations.ToNat

@@ -219,4 +219,34 @@ def ofInt64 (n : Int64) : Float32.Model :=
 def ofISize (n : ISize) : Float32.Model :=
   pack (UnpackedFloat.ofISize Format.binary32 n)
 
+/-- Converts a `Float32.Model` to a `UInt8`. -/
+def toUInt8 (f : Float32.Model) : UInt8 := f.unpack.toUInt8
+
+/-- Converts a `Float32.Model` to a `UInt16`. -/
+def toUInt16 (f : Float32.Model) : UInt16 := f.unpack.toUInt16
+
+/-- Converts a `Float32.Model` to a `UInt32`. -/
+def toUInt32 (f : Float32.Model) : UInt32 := f.unpack.toUInt32
+
+/-- Converts a `Float32.Model` to a `UInt64`. -/
+def toUInt64 (f : Float32.Model) : UInt64 := f.unpack.toUInt64
+
+/-- Converts a `Float32.Model` to a `USize`. -/
+def toUSize (f : Float32.Model) : USize := f.unpack.toUSize
+
+/-- Converts a `Float32.Model` to an `Int8`. -/
+def toInt8 (f : Float32.Model) : Int8 := f.unpack.toInt8
+
+/-- Converts a `Float32.Model` to an `Int16`. -/
+def toInt16 (f : Float32.Model) : Int16 := f.unpack.toInt16
+
+/-- Converts a `Float32.Model` to an `Int32`. -/
+def toInt32 (f : Float32.Model) : Int32 := f.unpack.toInt32
+
+/-- Converts a `Float32.Model` to an `Int64`. -/
+def toInt64 (f : Float32.Model) : Int64 := f.unpack.toInt64
+
+/-- Converts a `Float32.Model` to an `ISize`. -/
+def toISize (f : Float32.Model) : ISize := f.unpack.toISize
+
 end Float32.Model

@@ -148,6 +148,51 @@ public def nativeOfInt32_32 (a : UInt64) : UInt64 := a.toUInt32.toInt32.toFloat3
 /-- Native `Float32` (`binary32`) conversion from a 64-bit signed operand. -/
 public def nativeOfInt64_32 (a : UInt64) : UInt64 := a.toInt64.toFloat32.toBits.toUInt64
 
+/-!
+Float-to-integer conversions. TestFloat emits these as unary vectors whose single
+operand is a `binary32`/`binary64` bit pattern and whose expected result is an
+integer bit pattern (32- or 64-bit, held in the low bits of the parsed `UInt64`;
+signed types are two's complement). The 32-bit results are rendered with 8 hex
+digits and the 64-bit results with 16, and unlike the float results they are never
+classified as `NaN`.
+-/
+
+/-- `Float.Model` (`binary64`) conversion to a 32-bit unsigned result. -/
+public def modelToUInt32 (a : UInt64) : UInt64 := (Float.Model.ofBits a).toUInt32.toUInt64
+/-- `Float.Model` (`binary64`) conversion to a 64-bit unsigned result. -/
+public def modelToUInt64 (a : UInt64) : UInt64 := (Float.Model.ofBits a).toUInt64
+/-- `Float.Model` (`binary64`) conversion to a 32-bit signed result. -/
+public def modelToInt32 (a : UInt64) : UInt64 := (Float.Model.ofBits a).toInt32.toUInt32.toUInt64
+/-- `Float.Model` (`binary64`) conversion to a 64-bit signed result. -/
+public def modelToInt64 (a : UInt64) : UInt64 := (Float.Model.ofBits a).toInt64.toUInt64
+
+/-- `Float32.Model` (`binary32`) conversion to a 32-bit unsigned result. -/
+public def modelToUInt32_32 (a : UInt64) : UInt64 := (Float32.Model.ofBits a.toUInt32).toUInt32.toUInt64
+/-- `Float32.Model` (`binary32`) conversion to a 64-bit unsigned result. -/
+public def modelToUInt64_32 (a : UInt64) : UInt64 := (Float32.Model.ofBits a.toUInt32).toUInt64
+/-- `Float32.Model` (`binary32`) conversion to a 32-bit signed result. -/
+public def modelToInt32_32 (a : UInt64) : UInt64 := (Float32.Model.ofBits a.toUInt32).toInt32.toUInt32.toUInt64
+/-- `Float32.Model` (`binary32`) conversion to a 64-bit signed result. -/
+public def modelToInt64_32 (a : UInt64) : UInt64 := (Float32.Model.ofBits a.toUInt32).toInt64.toUInt64
+
+/-- Native `Float` (`binary64`) conversion to a 32-bit unsigned result. -/
+public def nativeToUInt32 (a : UInt64) : UInt64 := (Float.ofBits a).toUInt32.toUInt64
+/-- Native `Float` (`binary64`) conversion to a 64-bit unsigned result. -/
+public def nativeToUInt64 (a : UInt64) : UInt64 := (Float.ofBits a).toUInt64
+/-- Native `Float` (`binary64`) conversion to a 32-bit signed result. -/
+public def nativeToInt32 (a : UInt64) : UInt64 := (Float.ofBits a).toInt32.toUInt32.toUInt64
+/-- Native `Float` (`binary64`) conversion to a 64-bit signed result. -/
+public def nativeToInt64 (a : UInt64) : UInt64 := (Float.ofBits a).toInt64.toUInt64
+
+/-- Native `Float32` (`binary32`) conversion to a 32-bit unsigned result. -/
+public def nativeToUInt32_32 (a : UInt64) : UInt64 := (Float32.ofBits a.toUInt32).toUInt32.toUInt64
+/-- Native `Float32` (`binary32`) conversion to a 64-bit unsigned result. -/
+public def nativeToUInt64_32 (a : UInt64) : UInt64 := (Float32.ofBits a.toUInt32).toUInt64
+/-- Native `Float32` (`binary32`) conversion to a 32-bit signed result. -/
+public def nativeToInt32_32 (a : UInt64) : UInt64 := (Float32.ofBits a.toUInt32).toInt32.toUInt32.toUInt64
+/-- Native `Float32` (`binary32`) conversion to a 64-bit signed result. -/
+public def nativeToInt64_32 (a : UInt64) : UInt64 := (Float32.ofBits a.toUInt32).toInt64.toUInt64
+
 public inductive Operation where
   /-- A binary operation on bit patterns. -/
   | binary (symbol : Char) (op : UInt64 → UInt64 → UInt64)
@@ -173,3 +218,16 @@ public def f64Check (op : Operation) : Check := { op, isNaN := isNaNBits, toHex 
 
 /-- A `binary32` operation paired with its `binary32` `NaN` test and hex renderer. -/
 public def f32Check (op : Operation) : Check := { op, isNaN := isNaNBits32, toHex := toHex32 }
+
+/--
+An operation producing a 32-bit integer result (e.g. a float-to-int conversion).
+Integer results are compared bit-for-bit — never classified as `NaN` — and rendered
+as 8 hexadecimal digits.
+-/
+public def i32Check (op : Operation) : Check := { op, isNaN := fun _ => false, toHex := toHex32 }
+
+/--
+An operation producing a 64-bit integer result. Like `i32Check` but rendered as
+16 hexadecimal digits.
+-/
+public def i64Check (op : Operation) : Check := { op, isNaN := fun _ => false, toHex := toHex }

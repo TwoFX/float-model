@@ -87,7 +87,15 @@ def modelBackend : Backend where
      ("ui32_to_f32", f32Check (.unary "ui32_to_f32" modelOfUInt32_32)),
      ("ui64_to_f32", f32Check (.unary "ui64_to_f32" modelOfUInt64_32)),
      ("i32_to_f32", f32Check (.unary "i32_to_f32" modelOfInt32_32)),
-     ("i64_to_f32", f32Check (.unary "i64_to_f32" modelOfInt64_32))]
+     ("i64_to_f32", f32Check (.unary "i64_to_f32" modelOfInt64_32)),
+     ("f64_to_ui32", i32Check (.unary "f64_to_ui32" modelToUInt32)),
+     ("f64_to_ui64", i64Check (.unary "f64_to_ui64" modelToUInt64)),
+     ("f64_to_i32", i32Check (.unary "f64_to_i32" modelToInt32)),
+     ("f64_to_i64", i64Check (.unary "f64_to_i64" modelToInt64)),
+     ("f32_to_ui32", i32Check (.unary "f32_to_ui32" modelToUInt32_32)),
+     ("f32_to_ui64", i64Check (.unary "f32_to_ui64" modelToUInt64_32)),
+     ("f32_to_i32", i32Check (.unary "f32_to_i32" modelToInt32_32)),
+     ("f32_to_i64", i64Check (.unary "f32_to_i64" modelToInt64_32))]
 
 /-- Lean's native `Float`/`Float32` implementations (the hardware the model models). -/
 def nativeBackend : Backend where
@@ -116,7 +124,15 @@ def nativeBackend : Backend where
      ("ui32_to_f32", f32Check (.unary "ui32_to_f32" nativeOfUInt32_32)),
      ("ui64_to_f32", f32Check (.unary "ui64_to_f32" nativeOfUInt64_32)),
      ("i32_to_f32", f32Check (.unary "i32_to_f32" nativeOfInt32_32)),
-     ("i64_to_f32", f32Check (.unary "i64_to_f32" nativeOfInt64_32))]
+     ("i64_to_f32", f32Check (.unary "i64_to_f32" nativeOfInt64_32)),
+     ("f64_to_ui32", i32Check (.unary "f64_to_ui32" nativeToUInt32)),
+     ("f64_to_ui64", i64Check (.unary "f64_to_ui64" nativeToUInt64)),
+     ("f64_to_i32", i32Check (.unary "f64_to_i32" nativeToInt32)),
+     ("f64_to_i64", i64Check (.unary "f64_to_i64" nativeToInt64)),
+     ("f32_to_ui32", i32Check (.unary "f32_to_ui32" nativeToUInt32_32)),
+     ("f32_to_ui64", i64Check (.unary "f32_to_ui64" nativeToUInt64_32)),
+     ("f32_to_i32", i32Check (.unary "f32_to_i32" nativeToInt32_32)),
+     ("f32_to_i64", i64Check (.unary "f32_to_i64" nativeToInt64_32))]
 
 /-- The backends each vector file is checked against. -/
 def backends : List Backend := [modelBackend, nativeBackend]
