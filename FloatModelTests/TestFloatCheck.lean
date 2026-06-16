@@ -79,7 +79,15 @@ def modelBackend : Backend where
      ("f32_sqrt", f32Check (.unary "sqrt" (modelUnop32 Float32.Model.sqrt))),
      ("f32_eq", f32Check (.binary '=' (modelCompare32 Float32.Model.beq))),
      ("f32_le", f32Check (.binary '≤' (modelCompare32 Float32.Model.le))),
-     ("f32_lt", f32Check (.binary '<' (modelCompare32 Float32.Model.lt)))]
+     ("f32_lt", f32Check (.binary '<' (modelCompare32 Float32.Model.lt))),
+     ("ui32_to_f64", f64Check (.unary "ui32_to_f64" modelOfUInt32)),
+     ("ui64_to_f64", f64Check (.unary "ui64_to_f64" modelOfUInt64)),
+     ("i32_to_f64", f64Check (.unary "i32_to_f64" modelOfInt32)),
+     ("i64_to_f64", f64Check (.unary "i64_to_f64" modelOfInt64)),
+     ("ui32_to_f32", f32Check (.unary "ui32_to_f32" modelOfUInt32_32)),
+     ("ui64_to_f32", f32Check (.unary "ui64_to_f32" modelOfUInt64_32)),
+     ("i32_to_f32", f32Check (.unary "i32_to_f32" modelOfInt32_32)),
+     ("i64_to_f32", f32Check (.unary "i64_to_f32" modelOfInt64_32))]
 
 /-- Lean's native `Float`/`Float32` implementations (the hardware the model models). -/
 def nativeBackend : Backend where
@@ -100,7 +108,15 @@ def nativeBackend : Backend where
      ("f32_sqrt", f32Check (.unary "sqrt" (nativeUnop32 Float32.sqrt))),
      ("f32_eq", f32Check (.binary '=' (nativeCompare32 Float32.beq))),
      ("f32_le", f32Check (.binary '≤' (nativeCompare32 (fun a b => decide (a ≤ b))))),
-     ("f32_lt", f32Check (.binary '<' (nativeCompare32 (fun a b => decide (a < b)))))]
+     ("f32_lt", f32Check (.binary '<' (nativeCompare32 (fun a b => decide (a < b))))),
+     ("ui32_to_f64", f64Check (.unary "ui32_to_f64" nativeOfUInt32)),
+     ("ui64_to_f64", f64Check (.unary "ui64_to_f64" nativeOfUInt64)),
+     ("i32_to_f64", f64Check (.unary "i32_to_f64" nativeOfInt32)),
+     ("i64_to_f64", f64Check (.unary "i64_to_f64" nativeOfInt64)),
+     ("ui32_to_f32", f32Check (.unary "ui32_to_f32" nativeOfUInt32_32)),
+     ("ui64_to_f32", f32Check (.unary "ui64_to_f32" nativeOfUInt64_32)),
+     ("i32_to_f32", f32Check (.unary "i32_to_f32" nativeOfInt32_32)),
+     ("i64_to_f32", f32Check (.unary "i64_to_f32" nativeOfInt64_32))]
 
 /-- The backends each vector file is checked against. -/
 def backends : List Backend := [modelBackend, nativeBackend]

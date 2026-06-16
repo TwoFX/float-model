@@ -104,6 +104,50 @@ public def nativeUnop32 (op : Float32 → Float32) (a : UInt64) : UInt64 :=
 public def nativeCompare32 (op : Float32 → Float32 → Bool) (a b : UInt64) : UInt64 :=
   if op (Float32.ofBits a.toUInt32) (Float32.ofBits b.toUInt32) then 1 else 0
 
+/-!
+Integer-to-float conversions. TestFloat emits these as unary vectors whose single
+operand is an integer bit pattern (32- or 64-bit, held in the low bits of the
+parsed `UInt64`) and whose expected result is a `binary32`/`binary64` bit pattern.
+Signed 32-bit inputs are sign-extended by reinterpreting the low 32 bits via
+`UInt32.toInt32`; signed 64-bit inputs via `UInt64.toInt64`.
+-/
+
+/-- `Float.Model` (`binary64`) conversion from a 32-bit unsigned operand. -/
+public def modelOfUInt32 (a : UInt64) : UInt64 := (Float.Model.ofUInt32 a.toUInt32).toBits
+/-- `Float.Model` (`binary64`) conversion from a 64-bit unsigned operand. -/
+public def modelOfUInt64 (a : UInt64) : UInt64 := (Float.Model.ofUInt64 a).toBits
+/-- `Float.Model` (`binary64`) conversion from a 32-bit signed operand. -/
+public def modelOfInt32 (a : UInt64) : UInt64 := (Float.Model.ofInt32 a.toUInt32.toInt32).toBits
+/-- `Float.Model` (`binary64`) conversion from a 64-bit signed operand. -/
+public def modelOfInt64 (a : UInt64) : UInt64 := (Float.Model.ofInt64 a.toInt64).toBits
+
+/-- `Float32.Model` (`binary32`) conversion from a 32-bit unsigned operand. -/
+public def modelOfUInt32_32 (a : UInt64) : UInt64 := (Float32.Model.ofUInt32 a.toUInt32).toBits.toUInt64
+/-- `Float32.Model` (`binary32`) conversion from a 64-bit unsigned operand. -/
+public def modelOfUInt64_32 (a : UInt64) : UInt64 := (Float32.Model.ofUInt64 a).toBits.toUInt64
+/-- `Float32.Model` (`binary32`) conversion from a 32-bit signed operand. -/
+public def modelOfInt32_32 (a : UInt64) : UInt64 := (Float32.Model.ofInt32 a.toUInt32.toInt32).toBits.toUInt64
+/-- `Float32.Model` (`binary32`) conversion from a 64-bit signed operand. -/
+public def modelOfInt64_32 (a : UInt64) : UInt64 := (Float32.Model.ofInt64 a.toInt64).toBits.toUInt64
+
+/-- Native `Float` (`binary64`) conversion from a 32-bit unsigned operand. -/
+public def nativeOfUInt32 (a : UInt64) : UInt64 := a.toUInt32.toFloat.toBits
+/-- Native `Float` (`binary64`) conversion from a 64-bit unsigned operand. -/
+public def nativeOfUInt64 (a : UInt64) : UInt64 := a.toFloat.toBits
+/-- Native `Float` (`binary64`) conversion from a 32-bit signed operand. -/
+public def nativeOfInt32 (a : UInt64) : UInt64 := a.toUInt32.toInt32.toFloat.toBits
+/-- Native `Float` (`binary64`) conversion from a 64-bit signed operand. -/
+public def nativeOfInt64 (a : UInt64) : UInt64 := a.toInt64.toFloat.toBits
+
+/-- Native `Float32` (`binary32`) conversion from a 32-bit unsigned operand. -/
+public def nativeOfUInt32_32 (a : UInt64) : UInt64 := a.toUInt32.toFloat32.toBits.toUInt64
+/-- Native `Float32` (`binary32`) conversion from a 64-bit unsigned operand. -/
+public def nativeOfUInt64_32 (a : UInt64) : UInt64 := a.toFloat32.toBits.toUInt64
+/-- Native `Float32` (`binary32`) conversion from a 32-bit signed operand. -/
+public def nativeOfInt32_32 (a : UInt64) : UInt64 := a.toUInt32.toInt32.toFloat32.toBits.toUInt64
+/-- Native `Float32` (`binary32`) conversion from a 64-bit signed operand. -/
+public def nativeOfInt64_32 (a : UInt64) : UInt64 := a.toInt64.toFloat32.toBits.toUInt64
+
 public inductive Operation where
   /-- A binary operation on bit patterns. -/
   | binary (symbol : Char) (op : UInt64 → UInt64 → UInt64)

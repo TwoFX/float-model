@@ -22,7 +22,6 @@ are not specific to floating-point numbers.
 
 namespace Float.Model
 
-@[simp]
 theorem BitVec.toNat_pos {n : Nat} (b : BitVec n) : 0 < b.toNat ↔ 0#_ < b := by
   simp [BitVec.lt_def]
 
@@ -35,10 +34,13 @@ theorem Nat.eq_iff_testBit_eq {n m : Nat} : n = m ↔ ∀ i, Nat.testBit n i = N
   simp
 
 @[simp]
+theorem Nat.or_eq_zero {n m : Nat} : n ||| m = 0 ↔ n = 0 ∧ m = 0 := by
+  simp [Nat.eq_iff_testBit_eq, forall_and]
+
+@[simp]
 theorem Nat.or_pos {n m : Nat} : 0 < n ||| m ↔ 0 < n ∨ 0 < m := by
-  simp [Nat.pos_iff_ne_zero]
-  simp [Nat.eq_iff_testBit_eq]
-  simp [Decidable.imp_iff_or_not, exists_or, or_comm]
+  rw [Nat.pos_iff_ne_zero, ne_eq, Nat.or_eq_zero, Decidable.not_and_iff_not_or_not,
+    Nat.pos_iff_ne_zero, Nat.pos_iff_ne_zero]
 
 @[simp]
 theorem Nat.shiftLeft_pos {n m : Nat} : 0 < n <<< m ↔ 0 < n := by

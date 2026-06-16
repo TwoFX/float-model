@@ -171,4 +171,52 @@ all `NaN` inputs into the canonical `NaN`.
 def ofBits (a : UInt32) : Float32.Model :=
   pack (UnpackedFloat.unpack Format.binary32 a.toBitVec)
 
+/-- Converts an `Int` to a `Float32.Model`, returning positive zero on zero. -/
+def ofInt (n : Int) : Float32.Model :=
+  pack (UnpackedFloat.ofInt Format.binary32 n)
+
+/-- Converts a `Nat` to a `Float32.Model`, returning positive zero on zero. -/
+def ofNat (n : Nat) : Float32.Model :=
+  pack (UnpackedFloat.ofNat Format.binary32 n)
+
+/-- Converts a `UInt8` to a `Float32.Model`, returning positive zero on zero. -/
+def ofUInt8 (n : UInt8) : Float32.Model :=
+  pack (UnpackedFloat.ofUInt8 Format.binary32 n)
+
+/-- Converts a `UInt16` to a `Float32.Model`, returning positive zero on zero. -/
+def ofUInt16 (n : UInt16) : Float32.Model :=
+  pack (UnpackedFloat.ofUInt16 Format.binary32 n)
+
+/-- Converts a `UInt32` to a `Float32.Model`, returning positive zero on zero. -/
+def ofUInt32 (n : UInt32) : Float32.Model :=
+  pack (UnpackedFloat.ofUInt32 Format.binary32 n)
+
+/-- Converts a `UInt64` to a `Float32.Model`, returning positive zero on zero. -/
+def ofUInt64 (n : UInt64) : Float32.Model :=
+  pack (UnpackedFloat.ofUInt64 Format.binary32 n)
+
+/-- Converts a `USize` to a `Float32.Model`, returning positive zero on zero. -/
+def ofUSize (n : USize) : Float32.Model :=
+  pack (UnpackedFloat.ofUSize Format.binary32 n)
+
+/-- Converts an `Int8` to a `Float32.Model`, returning positive zero on zero. -/
+def ofInt8 (n : Int8) : Float32.Model :=
+  pack (UnpackedFloat.ofInt8 Format.binary32 n)
+
+/-- Converts an `Int16` to a `Float32.Model`, returning positive zero on zero. -/
+def ofInt16 (n : Int16) : Float32.Model :=
+  pack (UnpackedFloat.ofInt16 Format.binary32 n)
+
+/-- Converts an `Int32` to a `Float32.Model`, returning positive zero on zero. -/
+def ofInt32 (n : Int32) : Float32.Model :=
+  pack (UnpackedFloat.ofInt32 Format.binary32 n)
+
+/-- Converts an `Int64` to a `Float32.Model`, returning positive zero on zero. -/
+def ofInt64 (n : Int64) : Float32.Model :=
+  pack (UnpackedFloat.ofInt64 Format.binary32 n)
+
+/-- Converts an `ISize` to a `Float32.Model`, returning positive zero on zero. -/
+def ofISize (n : ISize) : Float32.Model :=
+  pack (UnpackedFloat.ofISize Format.binary32 n)
+
 end Float32.Model

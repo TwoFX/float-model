@@ -103,7 +103,7 @@ def unpack (spec : Format) (b : BitVec spec.numBits) : UnpackedFloat :=
       .zero sign
     else
       -- subnormal
-      .finite sign mantissaVec.toNat (exponent + 1) (by simpa [BitVec.pos_iff_ne_zero])
+      .finite sign mantissaVec.toNat (exponent + 1) (by simpa [BitVec.toNat_pos, BitVec.pos_iff_ne_zero])
   else
     -- normal
     .finite sign (1#1 ++ mantissaVec).toNat exponent (by simp)
