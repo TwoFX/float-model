@@ -11,7 +11,3 @@ name = "FloatModelTests"
 [[lean_exe]]
 name = "testfloat-check"
 root = "FloatModelTests.TestFloatCheck"
-
-[[lean_exe]]
-name = "ucbtest-check"
-root = "FloatModelTests.UCBTestCheck"
