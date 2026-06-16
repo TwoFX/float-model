@@ -52,7 +52,7 @@ abbrev binary64 : Format where
 abbrev numBits (spec : Format) : Nat :=
   1 + spec.exponentBits + spec.mantissaBitsWithoutImplicit
 
-/-- The number of bits in the mantisse, *including the implicit bit*. -/
+/-- The number of bits in the mantissa, *including the implicit bit*. -/
 def mantissaBits (spec : Format) : Nat :=
   1 + spec.mantissaBitsWithoutImplicit
 
