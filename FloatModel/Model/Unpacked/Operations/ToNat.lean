@@ -13,7 +13,7 @@ public import Init.Data.SInt.Basic
 -- need to rely on.
 @[expose] public section
 
-namespace Float.Model.UnpackedFloat
+namespace FloatModel.Model.UnpackedFloat
 
 /--
 Returns an `Int` that is close to the given `(sign, mantissa, exponent)` triple.

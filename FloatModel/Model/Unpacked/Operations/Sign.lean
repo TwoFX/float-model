@@ -12,7 +12,7 @@ public import FloatModel.Model.Unpacked.Basic
 -- need to rely on.
 @[expose] public section
 
-namespace Float.Model.UnpackedFloat
+namespace FloatModel.Model.UnpackedFloat
 
 /-- Negates the given float. -/
 def neg : UnpackedFloat → UnpackedFloat
@@ -28,4 +28,4 @@ def abs : UnpackedFloat → UnpackedFloat
   | .zero _ => .zero .positive
   | .finite _ m e hm => .finite .positive m e hm
 
-end Float.Model.UnpackedFloat
+end FloatModel.Model.UnpackedFloat

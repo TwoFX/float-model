@@ -12,7 +12,7 @@ public import FloatModel.Model.Unpacked.Round
 -- need to rely on.
 @[expose] public section
 
-namespace Float.Model.UnpackedFloat
+namespace FloatModel.Model.UnpackedFloat
 
 /--
 Computes the sum of two floating point numbers and rounds the result according to
@@ -36,4 +36,4 @@ def add (spec : Format) : UnpackedFloat → UnpackedFloat → UnpackedFloat
     let mantissa := s₁.apply m₁ + s₂.apply m₂
     normalize spec mantissa smallerExponent .positive
 
-end Float.Model.UnpackedFloat
+end FloatModel.Model.UnpackedFloat

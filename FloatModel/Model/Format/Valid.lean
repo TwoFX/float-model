@@ -12,7 +12,7 @@ public import FloatModel.Model.Unpacked.Pack.Basic
 -- need to rely on.
 @[expose] public section
 
-namespace Float.Model
+namespace FloatModel.Model
 
 open UnpackedFloat
 
@@ -24,4 +24,4 @@ structure Format.Valid (spec : Format) (b : BitVec spec.numBits) : Prop where
   /-- If the bit vector encodes a `NaN`, then it is the canonical `NaN`. -/
   eq_packedNaN : unpackExponent b = (-1#_) → unpackMantissa b ≠ 0#_ → b = packedNaN spec
 
-end Float.Model
+end FloatModel.Model

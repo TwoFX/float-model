@@ -2,6 +2,12 @@
 
 Minimal float model for the Lean standard library.
 
+This has been upstreamed into Lean core to be included in Lean 4.33,
+see [#14079](https://github.com/leanprover/lean4/pull/14079),
+[#14091](https://github.com/leanprover/lean4/pull/14091) and
+[#14110](https://github.com/leanprover/lean4/pull/14110) and
+the [blog post](https://juliahimmel.de/blog/float-qanda/).
+
 ## Testing
 
 All test vectors are committed (gzip-compressed, in Berkeley TestFloat format)

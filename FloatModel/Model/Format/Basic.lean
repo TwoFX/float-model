@@ -13,7 +13,7 @@ public import Init.Data.Int.Basic
 -- need to rely on.
 @[expose] public section
 
-namespace Float.Model
+namespace FloatModel.Model
 
 /--
 The position of the most significant digit with the unit digit corresponds to `1`.
@@ -87,4 +87,4 @@ def targetExponent (spec : Format) (totalExponent : Int) : Int :=
 
 end Format
 
-end Float.Model
+end FloatModel.Model

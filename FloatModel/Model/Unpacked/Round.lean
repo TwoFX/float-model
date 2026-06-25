@@ -14,7 +14,7 @@ public import FloatModel.Model.Unpacked.Sign
 -- need to rely on.
 @[expose] public section
 
-namespace Float.Model.UnpackedFloat
+namespace FloatModel.Model.UnpackedFloat
 
 /--
 Suppose given a real number `x : ℝ`. We can compute the binary expansion
@@ -192,4 +192,4 @@ def normalize (spec : Format) (mantissa : Int) (exponent : Int) (zeroSign : Sign
   | .eq => .zero zeroSign
   | .gt => round spec .positive mantissa.toNat exponent
 
-end Float.Model.UnpackedFloat
+end FloatModel.Model.UnpackedFloat

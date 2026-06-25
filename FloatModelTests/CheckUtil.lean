@@ -12,7 +12,7 @@ Helpers shared by `TestFloatCheck`, which checks the model against the committed
 TestFloat-format test vectors for both `binary32` and `binary64`.
 -/
 
-open Float.Model
+open FloatModel.Model
 
 public def hexToUInt64? (s : String) : Option UInt64 :=
   if s.isEmpty then none
@@ -47,35 +47,35 @@ Whether a `binary32` bit pattern (held in the low 32 bits of `x`) is a `NaN`
 public def isNaNBits32 (x : UInt64) : Bool :=
   (x >>> 23) &&& 0xFF == 0xFF && (x &&& 0x7FFFFF) != 0
 
-public def modelBinop (op : Float.Model → Float.Model → Float.Model)
+public def modelBinop (op : FloatModel.Model → FloatModel.Model → FloatModel.Model)
     (a b : UInt64) : UInt64 :=
-  (op (Float.Model.ofBits a) (Float.Model.ofBits b)).toBits
+  (op (FloatModel.Model.ofBits a) (FloatModel.Model.ofBits b)).toBits
 
-public def modelUnop (op : Float.Model → Float.Model)
+public def modelUnop (op : FloatModel.Model → FloatModel.Model)
     (a : UInt64) : UInt64 :=
-  (op (Float.Model.ofBits a)).toBits
+  (op (FloatModel.Model.ofBits a)).toBits
 
 /--
-Adapts a comparison on `Float.Model`s to operate on `binary64` bit patterns,
+Adapts a comparison on `FloatModel.Model`s to operate on `binary64` bit patterns,
 returning `1` for a true result and `0` for a false one to match the boolean
 result column TestFloat emits for `f64_eq`, `f64_le`, and `f64_lt`.
 -/
-public def modelCompare (op : Float.Model → Float.Model → Bool) (a b : UInt64) : UInt64 :=
-  if op (Float.Model.ofBits a) (Float.Model.ofBits b) then 1 else 0
+public def modelCompare (op : FloatModel.Model → FloatModel.Model → Bool) (a b : UInt64) : UInt64 :=
+  if op (FloatModel.Model.ofBits a) (FloatModel.Model.ofBits b) then 1 else 0
 
 /-- `binary32` counterpart of `modelBinop`; bit patterns are held in the low 32 bits. -/
-public def modelBinop32 (op : Float32.Model → Float32.Model → Float32.Model)
+public def modelBinop32 (op : Float32Model.Model → Float32Model.Model → Float32Model.Model)
     (a b : UInt64) : UInt64 :=
-  (op (Float32.Model.ofBits a.toUInt32) (Float32.Model.ofBits b.toUInt32)).toBits.toUInt64
+  (op (Float32Model.Model.ofBits a.toUInt32) (Float32Model.Model.ofBits b.toUInt32)).toBits.toUInt64
 
 /-- `binary32` counterpart of `modelUnop`. -/
-public def modelUnop32 (op : Float32.Model → Float32.Model)
+public def modelUnop32 (op : Float32Model.Model → Float32Model.Model)
     (a : UInt64) : UInt64 :=
-  (op (Float32.Model.ofBits a.toUInt32)).toBits.toUInt64
+  (op (Float32Model.Model.ofBits a.toUInt32)).toBits.toUInt64
 
 /-- `binary32` counterpart of `modelCompare`. -/
-public def modelCompare32 (op : Float32.Model → Float32.Model → Bool) (a b : UInt64) : UInt64 :=
-  if op (Float32.Model.ofBits a.toUInt32) (Float32.Model.ofBits b.toUInt32) then 1 else 0
+public def modelCompare32 (op : Float32Model.Model → Float32Model.Model → Bool) (a b : UInt64) : UInt64 :=
+  if op (Float32Model.Model.ofBits a.toUInt32) (Float32Model.Model.ofBits b.toUInt32) then 1 else 0
 
 /--
 Adapts a `binary64` operation on Lean's native `Float` to operate on bit
@@ -112,23 +112,23 @@ Signed 32-bit inputs are sign-extended by reinterpreting the low 32 bits via
 `UInt32.toInt32`; signed 64-bit inputs via `UInt64.toInt64`.
 -/
 
-/-- `Float.Model` (`binary64`) conversion from a 32-bit unsigned operand. -/
-public def modelOfUInt32 (a : UInt64) : UInt64 := (Float.Model.ofUInt32 a.toUInt32).toBits
-/-- `Float.Model` (`binary64`) conversion from a 64-bit unsigned operand. -/
-public def modelOfUInt64 (a : UInt64) : UInt64 := (Float.Model.ofUInt64 a).toBits
-/-- `Float.Model` (`binary64`) conversion from a 32-bit signed operand. -/
-public def modelOfInt32 (a : UInt64) : UInt64 := (Float.Model.ofInt32 a.toUInt32.toInt32).toBits
-/-- `Float.Model` (`binary64`) conversion from a 64-bit signed operand. -/
-public def modelOfInt64 (a : UInt64) : UInt64 := (Float.Model.ofInt64 a.toInt64).toBits
+/-- `FloatModel.Model` (`binary64`) conversion from a 32-bit unsigned operand. -/
+public def modelOfUInt32 (a : UInt64) : UInt64 := (FloatModel.Model.ofUInt32 a.toUInt32).toBits
+/-- `FloatModel.Model` (`binary64`) conversion from a 64-bit unsigned operand. -/
+public def modelOfUInt64 (a : UInt64) : UInt64 := (FloatModel.Model.ofUInt64 a).toBits
+/-- `FloatModel.Model` (`binary64`) conversion from a 32-bit signed operand. -/
+public def modelOfInt32 (a : UInt64) : UInt64 := (FloatModel.Model.ofInt32 a.toUInt32.toInt32).toBits
+/-- `FloatModel.Model` (`binary64`) conversion from a 64-bit signed operand. -/
+public def modelOfInt64 (a : UInt64) : UInt64 := (FloatModel.Model.ofInt64 a.toInt64).toBits
 
-/-- `Float32.Model` (`binary32`) conversion from a 32-bit unsigned operand. -/
-public def modelOfUInt32_32 (a : UInt64) : UInt64 := (Float32.Model.ofUInt32 a.toUInt32).toBits.toUInt64
-/-- `Float32.Model` (`binary32`) conversion from a 64-bit unsigned operand. -/
-public def modelOfUInt64_32 (a : UInt64) : UInt64 := (Float32.Model.ofUInt64 a).toBits.toUInt64
-/-- `Float32.Model` (`binary32`) conversion from a 32-bit signed operand. -/
-public def modelOfInt32_32 (a : UInt64) : UInt64 := (Float32.Model.ofInt32 a.toUInt32.toInt32).toBits.toUInt64
-/-- `Float32.Model` (`binary32`) conversion from a 64-bit signed operand. -/
-public def modelOfInt64_32 (a : UInt64) : UInt64 := (Float32.Model.ofInt64 a.toInt64).toBits.toUInt64
+/-- `Float32Model.Model` (`binary32`) conversion from a 32-bit unsigned operand. -/
+public def modelOfUInt32_32 (a : UInt64) : UInt64 := (Float32Model.Model.ofUInt32 a.toUInt32).toBits.toUInt64
+/-- `Float32Model.Model` (`binary32`) conversion from a 64-bit unsigned operand. -/
+public def modelOfUInt64_32 (a : UInt64) : UInt64 := (Float32Model.Model.ofUInt64 a).toBits.toUInt64
+/-- `Float32Model.Model` (`binary32`) conversion from a 32-bit signed operand. -/
+public def modelOfInt32_32 (a : UInt64) : UInt64 := (Float32Model.Model.ofInt32 a.toUInt32.toInt32).toBits.toUInt64
+/-- `Float32Model.Model` (`binary32`) conversion from a 64-bit signed operand. -/
+public def modelOfInt64_32 (a : UInt64) : UInt64 := (Float32Model.Model.ofInt64 a.toInt64).toBits.toUInt64
 
 /-- Native `Float` (`binary64`) conversion from a 32-bit unsigned operand. -/
 public def nativeOfUInt32 (a : UInt64) : UInt64 := a.toUInt32.toFloat.toBits
@@ -157,23 +157,23 @@ digits and the 64-bit results with 16, and unlike the float results they are nev
 classified as `NaN`.
 -/
 
-/-- `Float.Model` (`binary64`) conversion to a 32-bit unsigned result. -/
-public def modelToUInt32 (a : UInt64) : UInt64 := (Float.Model.ofBits a).toUInt32.toUInt64
-/-- `Float.Model` (`binary64`) conversion to a 64-bit unsigned result. -/
-public def modelToUInt64 (a : UInt64) : UInt64 := (Float.Model.ofBits a).toUInt64
-/-- `Float.Model` (`binary64`) conversion to a 32-bit signed result. -/
-public def modelToInt32 (a : UInt64) : UInt64 := (Float.Model.ofBits a).toInt32.toUInt32.toUInt64
-/-- `Float.Model` (`binary64`) conversion to a 64-bit signed result. -/
-public def modelToInt64 (a : UInt64) : UInt64 := (Float.Model.ofBits a).toInt64.toUInt64
+/-- `FloatModel.Model` (`binary64`) conversion to a 32-bit unsigned result. -/
+public def modelToUInt32 (a : UInt64) : UInt64 := (FloatModel.Model.ofBits a).toUInt32.toUInt64
+/-- `FloatModel.Model` (`binary64`) conversion to a 64-bit unsigned result. -/
+public def modelToUInt64 (a : UInt64) : UInt64 := (FloatModel.Model.ofBits a).toUInt64
+/-- `FloatModel.Model` (`binary64`) conversion to a 32-bit signed result. -/
+public def modelToInt32 (a : UInt64) : UInt64 := (FloatModel.Model.ofBits a).toInt32.toUInt32.toUInt64
+/-- `FloatModel.Model` (`binary64`) conversion to a 64-bit signed result. -/
+public def modelToInt64 (a : UInt64) : UInt64 := (FloatModel.Model.ofBits a).toInt64.toUInt64
 
-/-- `Float32.Model` (`binary32`) conversion to a 32-bit unsigned result. -/
-public def modelToUInt32_32 (a : UInt64) : UInt64 := (Float32.Model.ofBits a.toUInt32).toUInt32.toUInt64
-/-- `Float32.Model` (`binary32`) conversion to a 64-bit unsigned result. -/
-public def modelToUInt64_32 (a : UInt64) : UInt64 := (Float32.Model.ofBits a.toUInt32).toUInt64
-/-- `Float32.Model` (`binary32`) conversion to a 32-bit signed result. -/
-public def modelToInt32_32 (a : UInt64) : UInt64 := (Float32.Model.ofBits a.toUInt32).toInt32.toUInt32.toUInt64
-/-- `Float32.Model` (`binary32`) conversion to a 64-bit signed result. -/
-public def modelToInt64_32 (a : UInt64) : UInt64 := (Float32.Model.ofBits a.toUInt32).toInt64.toUInt64
+/-- `Float32Model.Model` (`binary32`) conversion to a 32-bit unsigned result. -/
+public def modelToUInt32_32 (a : UInt64) : UInt64 := (Float32Model.Model.ofBits a.toUInt32).toUInt32.toUInt64
+/-- `Float32Model.Model` (`binary32`) conversion to a 64-bit unsigned result. -/
+public def modelToUInt64_32 (a : UInt64) : UInt64 := (Float32Model.Model.ofBits a.toUInt32).toUInt64
+/-- `Float32Model.Model` (`binary32`) conversion to a 32-bit signed result. -/
+public def modelToInt32_32 (a : UInt64) : UInt64 := (Float32Model.Model.ofBits a.toUInt32).toInt32.toUInt32.toUInt64
+/-- `Float32Model.Model` (`binary32`) conversion to a 64-bit signed result. -/
+public def modelToInt64_32 (a : UInt64) : UInt64 := (Float32Model.Model.ofBits a.toUInt32).toInt64.toUInt64
 
 /-- Native `Float` (`binary64`) conversion to a 32-bit unsigned result. -/
 public def nativeToUInt32 (a : UInt64) : UInt64 := (Float.ofBits a).toUInt32.toUInt64

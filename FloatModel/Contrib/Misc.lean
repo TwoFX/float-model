@@ -20,7 +20,7 @@ are not specific to floating-point numbers.
 
 @[expose] public section
 
-namespace Float.Model
+namespace FloatModel.Model
 
 theorem BitVec.toNat_pos {n : Nat} (b : BitVec n) : 0 < b.toNat ↔ 0#_ < b := by
   simp [BitVec.lt_def]
@@ -56,4 +56,4 @@ theorem BitVec.zero_eq_neg_one_iff {w : Nat} : 0#w = (-1#w) ↔ w = 0 := by
     have : 2 ≤ 2 ^ (w + 1) := Nat.le_pow (by simp)
     omega
 
-end Float.Model
+end FloatModel.Model

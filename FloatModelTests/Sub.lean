@@ -8,9 +8,9 @@ module
 import FloatModel
 meta import FloatModel
 
-open Float.Model Float.Model.UnpackedFloat
+open FloatModel.Model FloatModel.Model.UnpackedFloat
 
-def spec : Float.Model.Format where
+def spec : FloatModel.Model.Format where
   mantissaBitsWithoutImplicit := 3
   hm := by decide
   exponentBits := 5
@@ -33,7 +33,7 @@ def spec : Float.Model.Format where
   (UnpackedFloat.finite .positive 0b1111 1 (by decide))
 
 def subSoft (x y : Float) : Float :=
-  Float.ofBits (Float.Model.sub (.ofBits x.toBits) (.ofBits y.toBits)).toBits
+  Float.ofBits (FloatModel.Model.sub (.ofBits x.toBits) (.ofBits y.toBits)).toBits
 
 def floats : Array Float := #[
   1,

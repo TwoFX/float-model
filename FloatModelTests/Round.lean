@@ -8,9 +8,9 @@ module
 import FloatModel
 meta import FloatModel
 
-open Float.Model Float.Model.UnpackedFloat
+open FloatModel.Model FloatModel.Model.UnpackedFloat
 
-def spec : Float.Model.Format where
+def spec : FloatModel.Model.Format where
   mantissaBitsWithoutImplicit := 3
   hm := by decide
   exponentBits := 5

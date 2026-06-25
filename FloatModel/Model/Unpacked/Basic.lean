@@ -13,7 +13,7 @@ public import Init.Data.Int.Repr
 -- need to rely on.
 @[expose] public section
 
-namespace Float.Model
+namespace FloatModel.Model
 
 open UnpackedFloat in
 /--
@@ -44,4 +44,4 @@ inductive UnpackedFloat where
   | finite (sign : Sign) (mantissa : Nat) (exponent : Int) (mantissa_pos : 0 < mantissa) : UnpackedFloat
 deriving Repr, BEq
 
-end Float.Model
+end FloatModel.Model

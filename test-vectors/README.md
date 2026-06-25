@@ -18,13 +18,13 @@ Integer-to-float conversions are named `<int>_to_<precision>` (e.g. `i64_to_f64`
 `ui32_to_f32`), with `<int>` one of `ui32 ui64 i32 i64`. These are unary: each line is
 `<integer> <expected> <flags>` with the integer operand given as its bit pattern (8
 hexadecimal digits for the 32-bit types, 16 for the 64-bit types; signed types are two's
-complement). They check `Float.Model.of{U}Int{32,64}`/`Float32.Model.of{U}Int{32,64}`.
+complement). They check `FloatModel.Model.of{U}Int{32,64}`/`Float32Model.Model.of{U}Int{32,64}`.
 
 Float-to-integer conversions are named `<precision>_to_<int>` (e.g. `f64_to_i32`,
 `f32_to_ui64`). These are unary: each line is `<float> <expected> <flags>` with the float
 operand as its bit pattern and the integer result in the low bits (8 hexadecimal digits for
 the 32-bit types, 16 for the 64-bit types; signed types are two's complement). They check
-`Float.Model.to{U}Int{32,64}`/`Float32.Model.to{U}Int{32,64}`. Unlike the float-result
+`FloatModel.Model.to{U}Int{32,64}`/`Float32Model.Model.to{U}Int{32,64}`. Unlike the float-result
 files, the integer result is compared bit-for-bit and never treated as a `NaN` class.
 
 These follow the **saturating** convention of Lean's native `Float.toIntX`/`toUIntX` (and

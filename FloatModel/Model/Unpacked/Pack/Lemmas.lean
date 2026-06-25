@@ -14,7 +14,7 @@ public import FloatModel.Model.Format.Valid
 -- need to rely on.
 @[expose] public section
 
-namespace Float.Model.UnpackedFloat
+namespace FloatModel.Model.UnpackedFloat
 
 @[simp]
 theorem unpackMantissa_packComponents {spec : Format} {sign exponent mantissa} :
@@ -46,4 +46,4 @@ theorem valid_pack {spec : Format} {f : UnpackedFloat} : spec.Valid (pack spec f
   | case6 s m e hm actualMantissaBits biasedExponent h₁ h₂ =>
     simp [Nat.pos_iff_ne_zero.1 spec.he]
 
-end Float.Model.UnpackedFloat
+end FloatModel.Model.UnpackedFloat

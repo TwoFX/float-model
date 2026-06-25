@@ -16,7 +16,7 @@ public import Init.Data.UInt.Bitwise
 -- need to rely on.
 @[expose] public section
 
-namespace Float.Model.UnpackedFloat
+namespace FloatModel.Model.UnpackedFloat
 
 /-- Creates a packed float from a sign, an exponent and a mantissa. -/
 def packComponents (spec : Format) (sign : Sign)
@@ -114,4 +114,4 @@ def ofFloat (f : Float) : UnpackedFloat :=
 def toFloat (f : UnpackedFloat) : Float :=
   Float.ofBits (UInt64.ofBitVec (pack Format.binary64 f))
 
-end Float.Model.UnpackedFloat
+end FloatModel.Model.UnpackedFloat

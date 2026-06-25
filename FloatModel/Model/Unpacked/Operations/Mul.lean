@@ -12,7 +12,7 @@ public import FloatModel.Model.Unpacked.Round
 -- need to rely on.
 @[expose] public section
 
-namespace Float.Model.UnpackedFloat
+namespace FloatModel.Model.UnpackedFloat
 
 /--
 Computes the product of two floating-point numbers and rounds the result according to
@@ -32,4 +32,4 @@ def mul (spec : Format) : UnpackedFloat → UnpackedFloat → UnpackedFloat
   | .finite s₁ m₁ e₁ _, .finite s₂ m₂ e₂ _ =>
     roundWithAccuracy spec (s₁ * s₂) (m₁ * m₂) (e₁ + e₂) .exact
 
-end Float.Model.UnpackedFloat
+end FloatModel.Model.UnpackedFloat

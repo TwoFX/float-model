@@ -12,7 +12,7 @@ import Std.Time
 /-!
 Checks the `binary32` and `binary64` operations against the test vectors
 committed under `test-vectors/`. Each file is run against two backends: the
-`model` (`Float.Model`/`Float32.Model`) and `native`, Lean's built-in `Float`
+`model` (`FloatModel.Model`/`Float32Model.Model`) and `native`, Lean's built-in `Float`
 and `Float32` operations (the hardware the model models, included as a sanity
 check on the harness and vectors). Running
 
@@ -42,7 +42,7 @@ exactly once; the per-backend wall-clock time printed alongside each result
 operations themselves, letting the model be compared against the native hardware.
 -/
 
-open Float.Model
+open FloatModel.Model
 open Std.Time (Timestamp Duration)
 
 /-- The directory holding the committed test-vector files, relative to the repo root. -/
@@ -60,26 +60,26 @@ structure Backend where
   /-- The implementations this backend provides, keyed by vector-file basename. -/
   operations : List (String × Check)
 
-/-- The `Float.Model`/`Float32.Model` implementations. -/
+/-- The `FloatModel.Model`/`Float32Model.Model` implementations. -/
 def modelBackend : Backend where
   name := "model"
   operations :=
-    [("f64_add", f64Check (.binary '+' (modelBinop Float.Model.add))),
-     ("f64_sub", f64Check (.binary '-' (modelBinop Float.Model.sub))),
-     ("f64_mul", f64Check (.binary '*' (modelBinop Float.Model.mul))),
-     ("f64_div", f64Check (.binary '/' (modelBinop Float.Model.div))),
-     ("f64_sqrt", f64Check (.unary "sqrt" (modelUnop Float.Model.sqrt))),
-     ("f64_eq", f64Check (.binary '=' (modelCompare Float.Model.beq))),
-     ("f64_le", f64Check (.binary '≤' (modelCompare Float.Model.le))),
-     ("f64_lt", f64Check (.binary '<' (modelCompare Float.Model.lt))),
-     ("f32_add", f32Check (.binary '+' (modelBinop32 Float32.Model.add))),
-     ("f32_sub", f32Check (.binary '-' (modelBinop32 Float32.Model.sub))),
-     ("f32_mul", f32Check (.binary '*' (modelBinop32 Float32.Model.mul))),
-     ("f32_div", f32Check (.binary '/' (modelBinop32 Float32.Model.div))),
-     ("f32_sqrt", f32Check (.unary "sqrt" (modelUnop32 Float32.Model.sqrt))),
-     ("f32_eq", f32Check (.binary '=' (modelCompare32 Float32.Model.beq))),
-     ("f32_le", f32Check (.binary '≤' (modelCompare32 Float32.Model.le))),
-     ("f32_lt", f32Check (.binary '<' (modelCompare32 Float32.Model.lt))),
+    [("f64_add", f64Check (.binary '+' (modelBinop FloatModel.Model.add))),
+     ("f64_sub", f64Check (.binary '-' (modelBinop FloatModel.Model.sub))),
+     ("f64_mul", f64Check (.binary '*' (modelBinop FloatModel.Model.mul))),
+     ("f64_div", f64Check (.binary '/' (modelBinop FloatModel.Model.div))),
+     ("f64_sqrt", f64Check (.unary "sqrt" (modelUnop FloatModel.Model.sqrt))),
+     ("f64_eq", f64Check (.binary '=' (modelCompare FloatModel.Model.beq))),
+     ("f64_le", f64Check (.binary '≤' (modelCompare FloatModel.Model.le))),
+     ("f64_lt", f64Check (.binary '<' (modelCompare FloatModel.Model.lt))),
+     ("f32_add", f32Check (.binary '+' (modelBinop32 Float32Model.Model.add))),
+     ("f32_sub", f32Check (.binary '-' (modelBinop32 Float32Model.Model.sub))),
+     ("f32_mul", f32Check (.binary '*' (modelBinop32 Float32Model.Model.mul))),
+     ("f32_div", f32Check (.binary '/' (modelBinop32 Float32Model.Model.div))),
+     ("f32_sqrt", f32Check (.unary "sqrt" (modelUnop32 Float32Model.Model.sqrt))),
+     ("f32_eq", f32Check (.binary '=' (modelCompare32 Float32Model.Model.beq))),
+     ("f32_le", f32Check (.binary '≤' (modelCompare32 Float32Model.Model.le))),
+     ("f32_lt", f32Check (.binary '<' (modelCompare32 Float32Model.Model.lt))),
      ("ui32_to_f64", f64Check (.unary "ui32_to_f64" modelOfUInt32)),
      ("ui64_to_f64", f64Check (.unary "ui64_to_f64" modelOfUInt64)),
      ("i32_to_f64", f64Check (.unary "i32_to_f64" modelOfInt32)),

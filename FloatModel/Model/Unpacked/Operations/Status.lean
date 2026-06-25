@@ -12,7 +12,7 @@ public import FloatModel.Model.Unpacked.Basic
 -- need to rely on.
 @[expose] public section
 
-namespace Float.Model.UnpackedFloat
+namespace FloatModel.Model.UnpackedFloat
 
 /--
 Returns `true` if the float represents a real number, i.e., it is neither infinite nor `NaN`.
@@ -37,4 +37,4 @@ def isNaN : UnpackedFloat → Bool
   | .notANumber => true
   | _ => false
 
-end Float.Model.UnpackedFloat
+end FloatModel.Model.UnpackedFloat

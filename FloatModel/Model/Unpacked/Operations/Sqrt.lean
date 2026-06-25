@@ -13,7 +13,7 @@ public import Init.Data.Nat.Sqrt.Basic
 -- need to rely on.
 @[expose] public section
 
-namespace Float.Model.UnpackedFloat
+namespace FloatModel.Model.UnpackedFloat
 
 /--
 Computes a `(mantissa, exponent)` pair for the square root with enough bits to populate the mantissa
@@ -50,4 +50,4 @@ def sqrt (spec : Format) : UnpackedFloat → UnpackedFloat
     let (m, e, acc) := sqrtCore spec m e
     roundWithAccuracy spec .positive m e acc
 
-end Float.Model.UnpackedFloat
+end FloatModel.Model.UnpackedFloat

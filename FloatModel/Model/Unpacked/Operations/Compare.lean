@@ -12,7 +12,7 @@ public import FloatModel.Model.Unpacked.Basic
 -- need to rely on.
 @[expose] public section
 
-namespace Float.Model.UnpackedFloat
+namespace FloatModel.Model.UnpackedFloat
 
 /--
 Computes the ordering between the two floats as specificed by IEEE. Returns an
@@ -66,4 +66,4 @@ This is not a reflexive relation.
 protected def beq (a b : UnpackedFloat) : Bool :=
   a.compare b == some .eq
 
-end Float.Model.UnpackedFloat
+end FloatModel.Model.UnpackedFloat

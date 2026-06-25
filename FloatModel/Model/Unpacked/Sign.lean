@@ -15,7 +15,7 @@ public import Init.Data.Ord.Basic
 -- need to rely on.
 @[expose] public section
 
-namespace Float.Model.UnpackedFloat
+namespace FloatModel.Model.UnpackedFloat
 
 /--
 Inductive with two constructors `negative` and `positive` for representing sign bits in
@@ -80,4 +80,4 @@ def ofBitVec (b  : BitVec 1) : Sign :=
 
 end Sign
 
-end Float.Model.UnpackedFloat
+end FloatModel.Model.UnpackedFloat

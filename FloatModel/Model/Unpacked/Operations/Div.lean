@@ -12,7 +12,7 @@ public import FloatModel.Model.Unpacked.Round
 -- need to rely on.
 @[expose] public section
 
-namespace Float.Model.UnpackedFloat
+namespace FloatModel.Model.UnpackedFloat
 
 /--
 Returns the accuracy corresponding to the point `y + (num/den)ulp`.
@@ -58,4 +58,4 @@ def div (spec : Format) : UnpackedFloat → UnpackedFloat → UnpackedFloat
     let (m, e, acc) := divCore spec m₁ e₁ m₂ e₂
     roundWithAccuracy spec (s₁ / s₂) m e acc
 
-end Float.Model.UnpackedFloat
+end FloatModel.Model.UnpackedFloat

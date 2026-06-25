@@ -13,7 +13,7 @@ public import Init.Data.SInt.Basic
 -- need to rely on.
 @[expose] public section
 
-namespace Float.Model.UnpackedFloat
+namespace FloatModel.Model.UnpackedFloat
 
 /-- Converts an `Int` to an `UnpackedFloat`, returning positive zero on zero. -/
 def ofInt (spec : Format) (n : Int) : UnpackedFloat :=
@@ -63,4 +63,4 @@ def ofInt64 (spec : Format) (n : Int64) : UnpackedFloat :=
 def ofISize (spec : Format) (n : ISize) : UnpackedFloat :=
   ofInt spec n.toInt
 
-end Float.Model.UnpackedFloat
+end FloatModel.Model.UnpackedFloat
